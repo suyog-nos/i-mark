@@ -1,0 +1,270 @@
+/* ============================================
+   GLOBAL RESET & BASE STYLES
+   ============================================ */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  font-size: 18px;
+  /* Increased base size */
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* ============================================
+   GLOBAL LAYOUT SYSTEM
+   ============================================ */
+.App {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Main content area - fills available space */
+main {
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+/* Footer stays at bottom */
+footer {
+  flex-shrink: 0;
+}
+
+/* ============================================
+   SPACING SYSTEM (8px base unit)
+   ============================================ */
+:root {
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+
+  /* Container max widths */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1440px;
+  --container-xl: 1800px;
+  --container-2xl: 2200px;
+
+  /* Global horizontal padding */
+  --page-padding-mobile: 16px;
+  --page-padding-tablet: 24px;
+  --page-padding-desktop: 40px;
+
+  /* Section spacing */
+  --section-gap: 40px;
+}
+
+/* ============================================
+   CONSISTENT CONTAINER OVERRIDES
+   ============================================ */
+
+/* Ensure MUI containers use full width properly */
+.MuiContainer-root {
+  padding-left: var(--page-padding-mobile) !important;
+  padding-right: var(--page-padding-mobile) !important;
+}
+
+@media (min-width: 600px) {
+  .MuiContainer-root {
+    padding-left: var(--page-padding-tablet) !important;
+    padding-right: var(--page-padding-tablet) !important;
+  }
+}
+
+@media (min-width: 960px) {
+  .MuiContainer-root {
+    padding-left: var(--page-padding-desktop) !important;
+    padding-right: var(--page-padding-desktop) !important;
+  }
+}
+
+/* Fix maxWidth="xl" to be wider for better screen utilization */
+.MuiContainer-maxWidthXl {
+  max-width: 1800px !important;
+}
+
+.MuiContainer-maxWidthLg {
+  max-width: 1440px !important;
+}
+
+/* ============================================
+   PAGE SECTION SPACING
+   ============================================ */
+
+/* Consistent vertical rhythm for page sections */
+.page-section {
+  margin-bottom: var(--section-gap);
+}
+
+.page-section:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   UTILITY STATES
+   ============================================ */
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  width: 100%;
+}
+
+.error {
+  color: #ef4444;
+  text-align: center;
+  padding: var(--spacing-lg);
+}
+
+.success {
+  color: #10b981;
+  text-align: center;
+  padding: var(--spacing-lg);
+}
+
+/* ============================================
+   GRID IMPROVEMENTS
+   ============================================ */
+
+/* Ensure grids don't have excessive gaps */
+.MuiGrid-container {
+  margin-top: 0 !important;
+}
+
+.MuiGrid-item {
+  padding-top: 16px !important;
+}
+
+/* ============================================
+   CARD SPACING NORMALIZATION
+   ============================================ */
+
+.MuiCard-root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.MuiCardContent-root {
+  flex: 1;
+  padding: var(--spacing-lg) !important;
+}
+
+.MuiCardContent-root:last-child {
+  padding-bottom: var(--spacing-lg) !important;
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Dark mode scrollbar */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-track {
+    background: #1e293b;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #475569;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+}
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY SCALING
+   ============================================ */
+
+@media (max-width: 600px) {
+
+  h1,
+  .MuiTypography-h1 {
+    font-size: 1.75rem !important;
+  }
+
+  h2,
+  .MuiTypography-h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3,
+  .MuiTypography-h3 {
+    font-size: 1.25rem !important;
+  }
+
+  h4,
+  .MuiTypography-h4 {
+    font-size: 1.125rem !important;
+  }
+}
+
+/* ============================================
+   PREVENT CONTENT OVERFLOW
+   ============================================ */
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================
+   PAGE TRANSITION ANIMATION
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: fadeIn 0.3s ease-out forwards;
+}
