@@ -98,5 +98,33 @@ npm run dev:full
 - `/utils`: Helper scripts for validation and seeding.
 - `/uploads`: Storage for uploaded article images.
 
-##  License
+## 🛠️ System Management & Troubleshooting
+
+### Stopping the Application
+To stop the server, press `Ctrl + C` in your terminal.
+
+### Killing Locked Ports (If Server Won't Start)
+If you see `EADDRINUSE` errors (Port 3000/5000 already in use), run these commands to force-kill the processes:
+
+**Windows:**
+```bash
+npx kill-port 5000 3000
+# OR
+taskkill /F /IM node.exe
+```
+
+**Mac/Linux:**
+```bash
+npx kill-port 5000 3000
+# OR
+lsof -ti:5000,3000 | xargs kill -9
+```
+
+### Full Restart
+If the application behaves unexpectedly:
+1. Stop the terminal (`Ctrl + C`).
+2. Run `npx kill-port 5000 3000` to clear ports.
+3. Content `npm run dev:full` to restart.
+
+## 📜 License
 Academic Project - Imark Internship Program.
