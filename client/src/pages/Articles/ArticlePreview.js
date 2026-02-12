@@ -18,7 +18,9 @@ import {
     Edit,
     CheckCircle,
     ArrowBack,
-    Preview
+    Preview,
+    Wallpaper,
+    AutoAwesome
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -42,27 +44,45 @@ const ArticlePreview = () => {
     return (
         <Container maxWidth="lg">
             {/* Preview Banner */}
-            <Alert
-                severity="info"
-                icon={<Preview />}
+            {/* Sticky Preview Banner */}
+            <Paper
+                elevation={4}
                 sx={{
-                    mt: 3,
-                    borderRadius: '12px',
-                    '& .MuiAlert-message': { width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
+                    position: 'sticky',
+                    top: 24,
+                    zIndex: 1000,
+                    borderRadius: '50px',
+                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(20px)',
+                    mb: 8,
+                    mx: 'auto',
+                    maxWidth: '800px',
+                    border: '1px solid rgba(0,0,0,0.08)'
                 }}
             >
-                <Typography variant="subtitle2" fontWeight="700">PREVIEW MODE: This is how your article will look once published.</Typography>
-                <Box>
+                <Box sx={{ px: 4, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{ bgcolor: 'secondary.main', color: 'white', p: 0.5, borderRadius: '50%' }}>
+                            <Preview fontSize="small" />
+                        </Box>
+                        <Typography variant="subtitle2" fontWeight="700" sx={{ color: 'text.primary' }}>
+                            Preview Mode
+                        </Typography>
+                        <Divider orientation="vertical" flexItem sx={{ height: 20, my: 'auto' }} />
+                        <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
+                            This is how your story will look.
+                        </Typography>
+                    </Box>
                     <Button
+                        variant="contained"
                         startIcon={<Edit />}
-                        size="small"
                         onClick={() => navigate(-1)}
-                        sx={{ mr: 1 }}
+                        sx={{ borderRadius: '20px', textTransform: 'none', px: 3, boxShadow: 'none' }}
                     >
-                        Back to Edit
+                        Continue Editing
                     </Button>
                 </Box>
-            </Alert>
+            </Paper>
 
             <Box sx={{ py: { xs: 4, md: 8 } }}>
                 {/* Header Section */}
@@ -119,19 +139,43 @@ const ArticlePreview = () => {
                 </Box>
 
                 {/* Featured Image Preview */}
-                <Box sx={{ mb: 6, borderRadius: '32px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', bgcolor: '#f1f5f9', minHeight: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {/* Featured Image Preview */}
+                <Box sx={{
+                    mb: 6,
+                    borderRadius: '32px',
+                    overflow: 'hidden',
+                    boxShadow: article.imagePreview ? '0 32px 64px -12px rgba(0,0,0,0.15)' : 'none',
+                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.02)' : '#f8fafc',
+                    minHeight: '400px',
+                    border: article.imagePreview ? 'none' : '2px dashed #e2e8f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative'
+                }}>
                     {article.imagePreview ? (
                         <img
                             src={article.imagePreview}
                             alt={article.title}
                             style={{
                                 width: '100%',
-                                maxHeight: '600px',
-                                objectFit: 'cover'
+                                height: '100%',
+                                objectFit: 'cover',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0
                             }}
                         />
                     ) : (
-                        <Typography color="text.secondary">No image provided</Typography>
+                        <Stack alignItems="center" spacing={2} sx={{ opacity: 0.5 }}>
+                            <Wallpaper sx={{ fontSize: 64, color: 'text.secondary' }} />
+                            <Typography variant="h6" fontWeight="600" color="text.secondary">
+                                No Cover Image
+                            </Typography>
+                            <Typography variant="body2" color="text.disabled">
+                                Upload a high-quality image to attract readers
+                            </Typography>
+                        </Stack>
                     )}
                 </Box>
 
@@ -148,7 +192,29 @@ const ArticlePreview = () => {
                                 mb: 6
                             }}
                         >
-                            {article.content || 'No content available.'}
+                            {article.content ? (
+                                article.content.split('\n').map((paragraph, index) => (
+                                    <Typography key={index} paragraph sx={{ mb: 3 }}>
+                                        {paragraph}
+                                    </Typography>
+                                ))
+                            ) : (
+                                <Box sx={{
+                                    p: 8,
+                                    borderRadius: '24px',
+                                    border: '1px dashed #cbd5e1',
+                                    bgcolor: 'background.paper',
+                                    textAlign: 'center'
+                                }}>
+                                    <AutoAwesome sx={{ fontSize: 48, color: 'secondary.light', mb: 2, opacity: 0.5 }} />
+                                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                                        Your Story Begins Here
+                                    </Typography>
+                                    <Typography color="text.disabled">
+                                        Start writing in the editor to see your masterpiece take shape.
+                                    </Typography>
+                                </Box>
+                            )}
                         </Typography>
 
                         <Divider sx={{ mb: 4 }} />
@@ -167,7 +233,7 @@ const ArticlePreview = () => {
                     </Grid>
 
                     <Grid item xs={12} md={4}>
-                        <Paper sx={{ p: 4, borderRadius: '24px', position: 'sticky', top: 100, border: '1px solid #eee', boxShadow: 'none' }}>
+                        <Paper sx={{ p: 4, borderRadius: '24px', position: 'sticky', top: 100, border: (theme) => `1px solid ${theme.palette.divider}`, boxShadow: 'none' }}>
                             <Typography variant="h6" fontWeight="700" gutterBottom>Author Preview</Typography>
                             <Box sx={{ textAlign: 'center', my: 3 }}>
                                 <Avatar

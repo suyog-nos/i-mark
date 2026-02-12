@@ -209,7 +209,7 @@ const ArticleDetail = () => {
           <Grid item xs={12} md={8}>
             {/* Admin/Publisher Actions */}
             {(isAdmin || (isPublisher && user?.id === article?.author?._id)) && (
-              <Paper sx={{ p: 2, mb: 4, borderRadius: '16px', bgcolor: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', gap: 2 }}>
+              <Paper sx={{ p: 2, mb: 4, borderRadius: '16px', bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#f8fafc', border: (theme) => `1px solid ${theme.palette.divider}`, display: 'flex', gap: 2 }}>
                 <Typography variant="subtitle2" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 700 }}>
                   <Shield color="primary" /> Manage Article:
                 </Typography>
@@ -254,8 +254,8 @@ const ArticleDetail = () => {
                   p: 6,
                   textAlign: 'center',
                   borderRadius: '24px',
-                  bgcolor: '#f8fafc',
-                  border: '1px solid #e2e8f0',
+                  bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#f8fafc',
+                  border: (theme) => `1px solid ${theme.palette.divider}`,
                   mt: -4,
                   position: 'relative',
                   zIndex: 2,
@@ -331,7 +331,7 @@ const ArticleDetail = () => {
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 4, borderRadius: '24px', position: 'sticky', top: 100, border: '1px solid #eee', boxShadow: 'none' }}>
+            <Paper sx={{ p: 4, borderRadius: '24px', position: 'sticky', top: 100, border: (theme) => `1px solid ${theme.palette.divider}`, boxShadow: 'none' }}>
               <Typography variant="h6" fontWeight="700" gutterBottom>About the Author</Typography>
               <Box sx={{ textAlign: 'center', my: 3 }}>
                 <Avatar
@@ -347,8 +347,8 @@ const ArticleDetail = () => {
               <Divider sx={{ my: 3 }} />
               <Typography variant="subtitle2" color="text.secondary" gutterBottom>SHARE THIS STORY</Typography>
               <Stack direction="row" spacing={1}>
-                <IconButton color="primary" sx={{ bgcolor: '#f0f7ff' }}><Share /></IconButton>
-                <IconButton color="primary" sx={{ bgcolor: '#f0f7ff' }}><ThumbUp /></IconButton>
+                <IconButton color="primary" sx={{ bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(25, 118, 210, 0.15)' : '#f0f7ff' }}><Share /></IconButton>
+                <IconButton color="primary" sx={{ bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(25, 118, 210, 0.15)' : '#f0f7ff' }}><ThumbUp /></IconButton>
               </Stack>
             </Paper>
           </Grid>

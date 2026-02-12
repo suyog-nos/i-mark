@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { isTokenExpired } from '../utils/jwtHelper';
+import { setupAxiosInterceptor, removeAxiosInterceptor } from '../utils/axiosInterceptor';
 
 const AuthContext = createContext();
 
@@ -25,16 +27,36 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  // Setup Axios interceptor for 401 responses
+  useEffect(() => {
+    const interceptorId = setupAxiosInterceptor(logout);
+
+    // Cleanup: remove interceptor when component unmounts
+    return () => {
+      removeAxiosInterceptor(interceptorId);
+    };
+  }, []);
+
   // Check if user is logged in on app start
   useEffect(() => {
     const checkAuth = async () => {
       if (token) {
+        // Check if token is expired before making API call
+        if (isTokenExpired(token)) {
+          console.log('Token expired on app load, logging out...');
+          logout();
+          setLoading(false);
+          return;
+        }
+
         try {
           const response = await axios.get('/api/auth/me');
           setUser(response.data);
         } catch (error) {
           console.error('Auth check failed:', error);
-          logout();
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         }
       }
       setLoading(false);

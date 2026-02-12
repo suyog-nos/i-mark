@@ -1,8 +1,8 @@
-# 📋 Project Requirements & Implementation Status
+#  Project Requirements & Implementation Status
 
 This document tracks the technical and functional requirements for the NewsHub Portal project.
 
-## ✅ Implemented Requirements
+##  Implemented Requirements
 
 ### 1. User Authentication & Authorization
 - [x] **JWT Authentication**: Secure token-based login and registration.
@@ -28,7 +28,7 @@ This document tracks the technical and functional requirements for the NewsHub P
 - [x] **Subscription System**: Readers can follow specific publishers for tailored feeds.
 - [x] **High-Contrast Theming**: Seamless Light/Dark mode transitions.
 
-## 🛠️ Infrastructure Requirements
+##  Infrastructure Requirements
 - [x] **Database**: Optimized MongoDB aggregation for high-performance reporting.
 - [x] **API Design**: Modular Express routes with consistent error handling.
 - [x] **Frontend State**: Context API for clean, decoupled state management.

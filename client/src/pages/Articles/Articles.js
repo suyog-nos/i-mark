@@ -16,6 +16,14 @@ import {
   Avatar,
   Pagination
 } from '@mui/material';
+import {
+  Schedule,
+  Visibility,
+  Favorite,
+  CalendarToday,
+  RemoveRedEye,
+  FavoriteBorder
+} from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
@@ -111,45 +119,184 @@ const Articles = () => {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" gutterBottom fontWeight="700">
-        {t('navigation.articles')}
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Premium Page Header */}
+      <Box sx={{ mb: 5 }}>
+        <Typography
+          variant="h3"
+          component="h1"
+          fontWeight={800}
+          sx={{
+            mb: 1,
+            letterSpacing: '-0.03em',
+            background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}
+        >
+          {t('navigation.articles')}
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.05rem' }}>
+          Discover and explore our latest articles across all categories
+        </Typography>
+      </Box>
 
-      {/* Search and Filters */}
-      <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        <TextField
-          label={t('search.searchPlaceholder')}
-          variant="outlined"
-          value={search}
-          onChange={handleSearchChange}
-          sx={{ minWidth: 300 }}
-        />
-        <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>{t('articles.category')}</InputLabel>
-          <Select
-            value={category}
-            label={t('articles.category')}
-            onChange={handleCategoryChange}
+      {/* Premium Search and Filters */}
+      <Box
+        sx={{
+          mb: 5,
+          p: 3,
+          borderRadius: '20px',
+          background: (theme) => theme.palette.mode === 'dark'
+            ? 'rgba(255,255,255,0.05)'
+            : '#ffffff',
+          border: (theme) => `1px solid ${theme.palette.divider}`,
+          boxShadow: (theme) => theme.palette.mode === 'dark'
+            ? '0 4px 20px rgba(0,0,0,0.3)'
+            : '0 4px 20px rgba(0,0,0,0.06)'
+        }}
+      >
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+          <TextField
+            label="Search articles..."
+            placeholder="Type keywords, topics, or author names"
+            variant="outlined"
+            value={search}
+            onChange={handleSearchChange}
+            sx={{
+              flex: '1 1 300px',
+              minWidth: 300,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                backgroundColor: (theme) => theme.palette.mode === 'dark'
+                  ? 'rgba(255,255,255,0.05)'
+                  : '#f8f9fa',
+                '&:hover': {
+                  backgroundColor: (theme) => theme.palette.mode === 'dark'
+                    ? 'rgba(255,255,255,0.08)'
+                    : '#f0f2f5'
+                }
+              },
+              '& .MuiInputLabel-root': {
+                fontWeight: 500
+              }
+            }}
+          />
+
+          <FormControl
+            sx={{
+              minWidth: 180,
+              flex: '0 1 auto',
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                backgroundColor: (theme) => theme.palette.mode === 'dark'
+                  ? 'rgba(255,255,255,0.05)'
+                  : '#f8f9fa'
+              }
+            }}
           >
-            <MenuItem value="">All Categories</MenuItem>
-            {categories.map((cat) => (
-              <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>{t('search.sortBy')}</InputLabel>
-          <Select
-            value={sortBy}
-            label={t('search.sortBy')}
-            onChange={handleSortChange}
+            <InputLabel sx={{ fontWeight: 500 }}>Category</InputLabel>
+            <Select
+              value={category}
+              label="Category"
+              onChange={handleCategoryChange}
+            >
+              <MenuItem value="">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography>All Categories</Typography>
+                </Box>
+              </MenuItem>
+              {categories.map((cat) => (
+                <MenuItem key={cat} value={cat}>
+                  <Typography fontWeight={500}>{cat}</Typography>
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl
+            sx={{
+              minWidth: 180,
+              flex: '0 1 auto',
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                backgroundColor: (theme) => theme.palette.mode === 'dark'
+                  ? 'rgba(255,255,255,0.05)'
+                  : '#f8f9fa'
+              }
+            }}
           >
-            <MenuItem value="createdAt">{t('search.newest')}</MenuItem>
-            <MenuItem value="views">{t('search.mostViewed')}</MenuItem>
-            <MenuItem value="likes">{t('search.mostLiked')}</MenuItem>
-          </Select>
-        </FormControl>
+            <InputLabel sx={{ fontWeight: 500 }}>Sort By</InputLabel>
+            <Select
+              value={sortBy}
+              label="Sort By"
+              onChange={handleSortChange}
+            >
+              <MenuItem value="createdAt">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <CalendarToday sx={{ fontSize: 18, color: 'primary.main' }} />
+                  <Typography fontWeight={500}>Newest First</Typography>
+                </Box>
+              </MenuItem>
+              <MenuItem value="views">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <RemoveRedEye sx={{ fontSize: 18, color: 'info.main' }} />
+                  <Typography fontWeight={500}>Most Viewed</Typography>
+                </Box>
+              </MenuItem>
+              <MenuItem value="likes">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Favorite sx={{ fontSize: 18, color: 'error.main' }} />
+                  <Typography fontWeight={500}>Most Liked</Typography>
+                </Box>
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* Active Filters Display */}
+        {(search || category) && (
+          <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, mr: 1 }}>
+                ACTIVE FILTERS:
+              </Typography>
+              {search && (
+                <Chip
+                  label={`Search: "${search}"`}
+                  onDelete={() => {
+                    setSearch('');
+                    setPage(1);
+                  }}
+                  size="small"
+                  sx={{
+                    fontWeight: 600,
+                    borderRadius: '8px',
+                    background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)',
+                    color: '#fff'
+                  }}
+                />
+              )}
+              {category && (
+                <Chip
+                  label={`Category: ${category}`}
+                  onDelete={() => {
+                    setCategory('');
+                    setPage(1);
+                  }}
+                  size="small"
+                  sx={{
+                    fontWeight: 600,
+                    borderRadius: '8px',
+                    background: 'linear-gradient(135deg, #e91e63 0%, #c2185b 100%)',
+                    color: '#fff'
+                  }}
+                />
+              )}
+            </Box>
+          </Box>
+        )}
       </Box>
 
       {/* Articles Grid */}
@@ -162,7 +309,7 @@ const Articles = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 borderRadius: '24px',
-                border: '1px solid #f0f0f0',
+                border: (theme) => `1px solid ${theme.palette.divider}`,
                 boxShadow: 'none',
                 transition: 'all 0.3s ease',
                 '&:hover': {

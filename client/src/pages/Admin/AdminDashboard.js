@@ -25,6 +25,7 @@ import {
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(
   CategoryScale,
@@ -42,6 +43,7 @@ ChartJS.register(
 const AdminDashboard = () => {
   const { token, isAdmin, user } = useAuth();
   const theme = useTheme();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   // Initialize with safe defaults to prevent "infinite loading" if fetch fails
   const [stats, setStats] = useState({
@@ -221,20 +223,28 @@ const AdminDashboard = () => {
       {/* Quick Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {[
-          { label: 'Total Views', val: stats.totalViews.toLocaleString(), color: '#3b82f6' },
-          { label: 'Total Articles', val: stats.totalArticles.toLocaleString(), color: '#10b981' },
-          { label: 'Registered Users', val: stats.totalUsers.toLocaleString(), color: '#6366f1' },
-          { label: 'Pending Review', val: stats.pendingArticles, color: '#ef4444' }
+          { label: 'Total Views', val: stats.totalViews.toLocaleString(), color: '#3b82f6', path: null },
+          { label: 'Total Articles', val: stats.totalArticles.toLocaleString(), color: '#10b981', path: '/admin/articles' },
+          { label: 'Registered Users', val: stats.totalUsers.toLocaleString(), color: '#6366f1', path: '/admin/staff' },
+          { label: 'Pending Review', val: stats.pendingArticles, color: '#ef4444', path: '/admin/articles' }
         ].map((item, i) => (
           <Grid item xs={12} sm={6} md={3} key={i}>
-            <Paper elevation={0} sx={{
-              p: 3,
-              borderRadius: 3,
-              bgcolor: 'background.paper',
-              border: `1px solid ${theme.palette.divider}`,
-              transition: 'transform 0.2s',
-              '&:hover': { transform: 'translateY(-4px)' }
-            }}>
+            <Paper
+              elevation={0}
+              onClick={() => item.path && navigate(item.path)}
+              sx={{
+                p: 3,
+                borderRadius: 3,
+                bgcolor: 'background.paper',
+                border: `1px solid ${theme.palette.divider}`,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                cursor: item.path ? 'pointer' : 'default',
+                '&:hover': {
+                  transform: item.path ? 'translateY(-4px)' : 'none',
+                  boxShadow: item.path ? '0 8px 24px rgba(0,0,0,0.12)' : 'none'
+                }
+              }}
+            >
               <Typography variant="caption" color="text.secondary" fontWeight="700" sx={{ textTransform: 'uppercase' }}>
                 {item.label}
               </Typography>

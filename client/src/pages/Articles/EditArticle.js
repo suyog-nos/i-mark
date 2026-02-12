@@ -131,7 +131,7 @@ const EditArticle = () => {
   return (
     <Container maxWidth="md">
       <Box sx={{ py: 6 }}>
-        <Paper elevation={0} sx={{ p: 5, borderRadius: '24px', border: '1px solid #eee' }}>
+        <Paper elevation={0} sx={{ p: 5, borderRadius: '24px', border: (theme) => `1px solid ${theme.palette.divider}` }}>
           <Typography variant="h4" fontWeight="800" sx={{ mb: 4 }}>
             Edit Article
           </Typography>

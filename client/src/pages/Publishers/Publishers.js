@@ -107,8 +107,10 @@ const Publishers = () => {
             maxWidth: 600,
             '& .MuiOutlinedInput-root': {
               borderRadius: '50px',
-              bgcolor: 'white',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#ffffff',
+              boxShadow: (theme) => theme.palette.mode === 'dark'
+                ? '0 4px 20px rgba(0,0,0,0.3)'
+                : '0 4px 20px rgba(0,0,0,0.05)'
             }
           }}
           InputProps={{
@@ -132,19 +134,29 @@ const Publishers = () => {
               <Card
                 sx={{
                   borderRadius: '24px',
-                  border: '1px solid #f0f0f0',
+                  border: (theme) => `1px solid ${theme.palette.divider}`,
                   boxShadow: 'none',
                   transition: 'all 0.3s ease',
+                  bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#ffffff',
                   '&:hover': {
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
-                    borderColor: 'transparent'
+                    boxShadow: (theme) => theme.palette.mode === 'dark'
+                      ? '0 20px 40px rgba(0,0,0,0.5)'
+                      : '0 20px 40px rgba(0,0,0,0.08)',
+                    borderColor: 'primary.main'
                   }
                 }}
               >
                 <CardContent sx={{ p: 4, textAlign: 'center' }}>
                   <Avatar
                     src={getImageUrl(pub.profile?.picture)}
-                    sx={{ width: 100, height: 100, mx: 'auto', mb: 2, border: '4px solid #fff', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    sx={{
+                      width: 100,
+                      height: 100,
+                      mx: 'auto',
+                      mb: 2,
+                      border: (theme) => `4px solid ${theme.palette.background.paper}`,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}
                   />
                   <Typography variant="h6" fontWeight="700" display="flex" alignItems="center" justifyContent="center" gap={1}>
                     {pub.name} {pub.articlesCount > 10 && <Verified color="primary" sx={{ fontSize: 18 }} />}
@@ -177,7 +189,10 @@ const Publishers = () => {
                       {following?.includes(pub._id) ? "Unfollow" : "Follow"}
                     </Button>
                     <IconButton
-                      sx={{ border: '1px solid #eee', borderRadius: '12px' }}
+                      sx={{
+                        border: (theme) => `1px solid ${theme.palette.divider}`,
+                        borderRadius: '12px'
+                      }}
                       color="primary"
                     >
                       <Email />

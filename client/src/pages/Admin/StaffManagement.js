@@ -56,9 +56,8 @@ const StaffManagement = () => {
                     params: { limit: 100 }, // Get all for now or implement pagination
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                // Filter for staff members in frontend if backend doesn't support staff-only filter
-                const staff = response.data.users.filter(u => u.role !== 'reader');
-                setUsers(staff);
+                // Show all users including readers
+                setUsers(response.data.users);
                 setLoading(false);
             } catch (err) {
                 console.error('Error fetching staff:', err);
@@ -121,8 +120,8 @@ const StaffManagement = () => {
         <Container maxWidth="lg" sx={{ py: 6 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6 }}>
                 <Box>
-                    <Typography variant="h4" fontWeight="900">Staff Management</Typography>
-                    <Typography color="text.secondary">Control access and roles for platform staff</Typography>
+                    <Typography variant="h4" fontWeight="900">User Management</Typography>
+                    <Typography color="text.secondary">Manage all users and their roles on the platform</Typography>
                 </Box>
                 <Button
                     variant="contained"
@@ -131,7 +130,7 @@ const StaffManagement = () => {
                     to="/admin/users/create"
                     sx={{ borderRadius: '12px', px: 3 }}
                 >
-                    Add Staff Member
+                    Add User
                 </Button>
             </Box>
 
@@ -141,7 +140,7 @@ const StaffManagement = () => {
                 <Table>
                     <TableHead sx={{ bgcolor: '#f8fafc' }}>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 700 }}>Staff Member</TableCell>
+                            <TableCell sx={{ fontWeight: 700 }}>User</TableCell>
                             <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
                             <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
                             <TableCell sx={{ fontWeight: 700 }}>Last Activity</TableCell>
@@ -217,6 +216,7 @@ const StaffManagement = () => {
                                 label="New Role"
                                 onChange={(e) => setNewRole(e.target.value)}
                             >
+                                <MenuItem value="reader">Reader</MenuItem>
                                 <MenuItem value="publisher">Publisher</MenuItem>
                                 <MenuItem value="admin">Admin</MenuItem>
                                 <MenuItem value="editor">Editor</MenuItem>

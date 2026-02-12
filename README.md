@@ -1,75 +1,102 @@
-# 🗞️ NewsHub: Next-Gen Media Portal
+# News Portal System (Imark Internship)
 
-A high-performance, full-stack news management ecosystem designed for modern journalism. NewsHub features a robust role-based access control (RBAC) system, real-time engagement metrics, and a premium "Paywall" experience to drive user registration.
+A full-stack news management application built with the MERN stack (MongoDB, Express.js, React, Node.js). This project demonstrates Role-Based Access Control (RBAC), real-time data handling, and content management workflows.
+
+##  Project Overview
+
+This system is designed to manage the lifecycle of news articles from creation to publication. It features distinct interfaces for Administrators, Publishers, and Readers, ensuring secure and appropriate access to resources.
+
+##  Implemented Features
+
+### 1. Authentication & Security
+- **JWT Authentication**: Secure login system using JSON Web Tokens.
+- **Role-Based Access Control (RBAC)**: Middleware ensures tailored access for Admins, Publishers, and Readers.
+- **Secure Sessions**: Automatic token management and logout handling.
+
+### 2. User Roles
+- **Administrator**: Complete control over users and content. Can approve/reject articles via a Moderation Queue.
+- **Publisher**: dedicated dashboard to draft, edit, and submit articles. Access to performance analytics (views, status distribution).
+- **Reader**: Public access to published news with features to bookmark articles and follow publishers.
+
+### 3. Core Functionality
+- **Content Management**: Rich-text article creation with image upload support (Multer).
+- **Workflow System**: Articles transition through Draft → Pending → Published/Rejected states.
+- **Dashboard Analytics**: Visual data representation using Chart.js for publisher metrics.
+- **Localization**: Full support for English and Nepali languages using `i18next`.
+
+### 4. Real-Time Features
+- **Notifications**: Socket.IO integration alerts publishers instantly when their articles are approved or rejected.
+- **Live Status**: Real-time updates without page refreshes.
 
 ---
 
-## 🌟 Key Features
+##  Technology Stack
 
-### 🔐 1. Multi-Tier Security & RBAC
-*   **Administrator**: Full platform oversight, staff management, and article moderation.
-*   **Publisher**: Advanced content studio with scheduling and personalized performance analytics.
-*   **Reader**: Personalized hub for bookmarks, follows, and real-time news alerts.
-*   **Security Hardening**: Force-unmount logic on logout ensures zero state-leakage between sessions.
-
-### 📊 2. Publisher Intelligence
-*   **Live Metrics**: Real-time aggregation of views, likes, shares, and comments using MongoDB aggregation pipelines.
-*   **Article Trends**: Visual bar charts and daily activity line charts.
-*   **Content Lifecycle**: Manage drafts, pending reviews, and scheduled releases with automated timers.
-
-### 💎 3. Premium Reading Experience
-*   **Smart Paywall**: Attracts guests with a "Teaser" (Title, Image, Snippet) and a smooth fade-out, requiring login for full investigative reports.
-*   **Real-Time Core**: Socket.IO powered notifications and engagement updates.
-*   **Global Reach**: Native "English-Nepali" toggle with full RTL/LTR support via `i18next`.
+- **Frontend**: React 18, Material UI 5, Chart.js
+- **Backend**: Node.js, Express.js
+- **Database**: MongoDB (Mongoose ODM)
+- **Real-Time**: Socket.IO
+- **Utilities**: Multer (File Upload), i18next (Localization)
 
 ---
 
-## 🚀 Quick Setup
+##  Setup Instructions
 
-### 1. Installation
+### 1. Prerequisites
+- Node.js (v14 or higher)
+- MongoDB (Local instance or Atlas connection string)
+
+### 2. Installation
+
+Clone the repository and install dependencies for both server and client.
+
 ```bash
-# Install backend dependencies
+# 1. Install Backend Dependencies
 npm install
 
-# Install frontend dependencies
+# 2. Install Frontend Dependencies
 cd client
 npm install
 cd ..
 ```
 
-### 2. Environment (.env)
-Create a `.env` file in the root directory:
+### 3. Environment Configuration
+
+Create a `.env` file in the root directory with the following keys:
+
 ```env
-MONGODB_URI=mongodb://localhost:27017/news_portal
-JWT_SECRET=your_hyper_secure_secret
 PORT=5000
+MONGODB_URI=mongodb://localhost:27017/news_portal
+JWT_SECRET=your_secure_jwt_secret
+CLIENT_URL=http://localhost:3000
+
+# Optional: Admin Seeder Defaults
 ADMIN_EMAIL=admin@imark.com
+ADMIN_PASSWORD=admin123
 ```
 
-### 3. Execution
+### 4. Running the Application
+
+This project uses `concurrently` to run both servers with a single command:
+
 ```bash
 npm run dev:full
 ```
-*   **Frontend**: `http://localhost:3000`
-*   **Backend**: `http://localhost:5000`
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
 
 ---
 
-## 🛠️ Technology Stack
-*   **Frontend**: React 18, Material UI 5, Chart.js, i18next
-*   **Backend**: Node.js, Express, MongoDB (Mongoose)
-*   **Real-time**: Socket.IO
-*   **Authentication**: JWT (JSON Web Tokens) with HttpOnly support
+## Project Structure
 
----
+- `/client`: React frontend application source.
+- `/config`: Backend configuration (i18n, DB).
+- `/middleware`: Custom middleware for Auth (JWT) and File Uploads.
+- `/models`: Database schemas (User, Article, Notification).
+- `/routes`: API endpoints and controller logic.
+- `/utils`: Helper scripts for validation and seeding.
+- `/uploads`: Storage for uploaded article images.
 
-## 📦 Project Structure
-*   `/client`: React application (Pages, Components, Contexts)
-*   `/routes`: Modular Express API endpoints (Auth, Analytics, Articles)
-*   `/models`: Mongoose schemas for Users, Articles, and Notifications
-*   `/middleware`: Security, Role-Verification, and Auth handlers
-
----
-
-## ⚖️ License
-Licensed under the MIT License. Developed for the Imark Internship Program.
+##  License
+Academic Project - Imark Internship Program.

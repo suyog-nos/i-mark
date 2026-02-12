@@ -102,6 +102,7 @@ const ArticleModeration = () => {
             case 'pending': return 'warning';
             case 'rejected': return 'error';
             case 'flagged': return 'secondary';
+            case 'draft': return 'default';
             default: return 'default';
         }
     };
@@ -118,7 +119,7 @@ const ArticleModeration = () => {
                     <Typography color="text.secondary">Review and manage article submissions</Typography>
                 </Box>
                 <Stack direction="row" spacing={1}>
-                    {['pending', 'published', 'flagged', 'rejected', 'all'].map(status => (
+                    {['pending', 'published', 'flagged', 'rejected', 'draft', 'all'].map(status => (
                         <Chip
                             key={status}
                             label={status.toUpperCase()}

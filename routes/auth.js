@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { auth } = require('../middleware/auth');
+const { validatePassword } = require('../utils/validators');
 
 const router = express.Router();
 
@@ -11,6 +12,12 @@ router.post('/register', async (req, res) => {
     const { name, email, password, role = 'reader', language = 'en' } = req.body;
 
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@imark.com';
+
+    // Validate password strength
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
+      return res.status(400).json({ error: passwordCheck.message });
+    }
 
     // Prevent anyone from registering as admin directly via this route
     if (role === 'admin' && email.toLowerCase() !== adminEmail.toLowerCase()) {
@@ -166,6 +173,12 @@ router.put('/profile', auth, async (req, res) => {
 router.put('/change-password', auth, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
+
+    // Validate new password strength
+    const passwordCheck = validatePassword(newPassword);
+    if (!passwordCheck.valid) {
+      return res.status(400).json({ error: passwordCheck.message });
+    }
 
     const user = await User.findById(req.user._id);
 

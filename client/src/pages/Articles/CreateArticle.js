@@ -86,9 +86,7 @@ const CreateArticle = () => {
       setTimeout(() => {
         navigate('/dashboard');
       }, 2000);
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 2000);
+
     } catch (error) {
       setError(error.response?.data?.error || 'Failed to create article');
     } finally {

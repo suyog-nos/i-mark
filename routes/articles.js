@@ -3,39 +3,12 @@ const Article = require('../models/Article');
 const User = require('../models/User');
 const { auth, authorize } = require('../middleware/auth');
 const jwt = require('jsonwebtoken');
-const multer = require('multer');
+const { uploadFields } = require('../middleware/upload');
 const path = require('path');
 
 const router = express.Router();
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
-  },
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-
-    if (mimetype && extname) {
-      return cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed'));
-    }
-  }
-});
+// Multer configuration moved to middleware/upload.js
 
 // Get all published articles with filtering and pagination
 router.get('/', async (req, res) => {
@@ -140,13 +113,18 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+const { getSafeCreateStatus } = require('../utils/statusTransitions');
+
 // Create new article (Publisher only)
-router.post('/', auth, authorize('publisher', 'admin'), upload.fields([
+router.post('/', auth, authorize('publisher', 'admin'), uploadFields([
   { name: 'featuredImage', maxCount: 1 },
   { name: 'additionalMedia', maxCount: 5 }
 ]), async (req, res) => {
   try {
     const { title, content, category, tags, translations, status = 'draft', scheduledPublish } = req.body;
+
+    // Validate and get safe status for creation
+    const safeStatus = getSafeCreateStatus(status, req.user.role);
 
     const articleData = {
       title,
@@ -154,8 +132,8 @@ router.post('/', auth, authorize('publisher', 'admin'), upload.fields([
       category,
       tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
       author: req.user._id,
-      status: req.user.role === 'admin' ? status : (status === 'published' ? 'pending' : status),
-      scheduledPublish: status === 'scheduled' ? scheduledPublish : undefined
+      status: safeStatus,
+      scheduledPublish: safeStatus === 'scheduled' ? scheduledPublish : undefined
     };
 
     // Add translations if provided
@@ -186,8 +164,10 @@ router.post('/', auth, authorize('publisher', 'admin'), upload.fields([
   }
 });
 
+const { validateStatusTransition } = require('../utils/statusTransitions');
+
 // Update article (Author or Admin only)
-router.put('/:id', auth, upload.fields([
+router.put('/:id', auth, uploadFields([
   { name: 'featuredImage', maxCount: 1 },
   { name: 'additionalMedia', maxCount: 5 }
 ]), async (req, res) => {
@@ -205,6 +185,23 @@ router.put('/:id', auth, upload.fields([
 
     const updates = req.body;
     const allowedUpdates = ['title', 'content', 'category', 'tags', 'translations', 'status', 'scheduledPublish'];
+
+    // Validate status transition if status is being changed
+    if (updates.status && updates.status !== article.status) {
+      const validation = validateStatusTransition(
+        article.status,
+        updates.status,
+        req.user.role
+      );
+
+      if (!validation.valid) {
+        return res.status(400).json({
+          error: validation.error,
+          currentStatus: article.status,
+          attemptedStatus: updates.status
+        });
+      }
+    }
 
     // Filter allowed updates
     Object.keys(updates).forEach(key => {
@@ -228,10 +225,7 @@ router.put('/:id', auth, upload.fields([
       article.additionalMedia = req.files.additionalMedia.map(file => file.path.replace(/\\/g, '/'));
     }
 
-    // Publishers need approval for published articles
-    if (req.user.role === 'publisher' && updates.status === 'published') {
-      article.status = 'pending';
-    }
+
 
     await article.save();
     await article.populate('author', 'name profile.picture');
@@ -381,8 +375,8 @@ router.post('/:id/comments', auth, async (req, res) => {
   }
 });
 
-// Share article (increment share count)
-router.post('/:id/share', async (req, res) => {
+// Share article (increment share count) - Requires authentication
+router.post('/:id/share', auth, async (req, res) => {
   try {
     const article = await Article.findById(req.params.id);
 

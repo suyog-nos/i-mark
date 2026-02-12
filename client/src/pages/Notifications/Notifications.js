@@ -90,7 +90,7 @@ const Notifications = () => {
             ) : (
                 <Paper elevation={0} sx={{
                     borderRadius: '24px',
-                    border: '1px solid #eee',
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
                     overflow: 'hidden'
                 }}>
                     <List sx={{ p: 0 }}>
@@ -117,7 +117,7 @@ const Notifications = () => {
                                         }
                                     >
                                         <ListItemAvatar>
-                                            <Avatar sx={{ bgcolor: 'white', color: 'inherit', border: '1px solid #eee' }}>
+                                            <Avatar sx={{ bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : '#ffffff', color: 'inherit', border: (theme) => `1px solid ${theme.palette.divider}` }}>
                                                 {getIcon(n.type)}
                                             </Avatar>
                                         </ListItemAvatar>

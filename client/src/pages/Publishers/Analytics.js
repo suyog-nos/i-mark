@@ -183,8 +183,8 @@ const PublisherAnalytics = () => {
             {/* Charts Section */}
             <Grid container spacing={4} sx={{ mb: 6 }}>
                 <Grid item xs={12} md={8}>
-                    <Paper sx={{ p: 4, borderRadius: '24px', boxShadow: 'none', border: '1px solid #eee' }}>
-                        <Typography variant="h6" fontWeight="700" sx={{ mb: 4 }}>Views Over Time</Typography>
+                    <Paper sx={{ p: 4, borderRadius: '24px', boxShadow: 'none', border: '1px solid #eee', height: '100%' }}>
+                        <Typography variant="h6" fontWeight="700" sx={{ mb: 4 }}>Publishing Activity</Typography>
                         <Box sx={{ height: 300 }}>
                             <Line
                                 data={viewsOverTimeData}
@@ -199,8 +199,23 @@ const PublisherAnalytics = () => {
                     </Paper>
                 </Grid>
                 <Grid item xs={12} md={4}>
+                    <Paper sx={{ p: 4, borderRadius: '24px', boxShadow: 'none', border: '1px solid #eee', height: '100%' }}>
+                        <Typography variant="h6" fontWeight="700" sx={{ mb: 4 }}>Status Distribution</Typography>
+                        <Box sx={{ height: 300, display: 'flex', justifyContent: 'center' }}>
+                            <Doughnut
+                                data={articleStatusData}
+                                options={{
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: { legend: { position: 'bottom' } }
+                                }}
+                            />
+                        </Box>
+                    </Paper>
+                </Grid>
+                <Grid item xs={12}>
                     <Paper sx={{ p: 4, borderRadius: '24px', boxShadow: 'none', border: '1px solid #eee' }}>
-                        <Typography variant="h6" fontWeight="700" sx={{ mb: 4 }}>Content Performance</Typography>
+                        <Typography variant="h6" fontWeight="700" sx={{ mb: 4 }}>Top Content Performance</Typography>
                         <Box sx={{ height: 300 }}>
                             <Bar
                                 data={performanceData}

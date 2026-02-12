@@ -143,55 +143,184 @@ const Home = () => {
 
   return (
     <Container maxWidth="xl">
-      {/* Search & Hero Section */}
-      <Box sx={{ textAlign: 'center', py: 5, mb: 4, borderRadius: '24px', bgcolor: darkMode ? '#1e293b' : '#f8fafc', border: '1px solid #e2e8f0' }}>
-        <Typography variant="h2" fontWeight="900" gutterBottom sx={{ letterSpacing: '-2px' }}>Insight World</Typography>
-        <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>Stay informed, stay ahead.</Typography>
 
-        <Box sx={{ maxWidth: 800, mx: 'auto', px: 3 }}>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ bgcolor: 'white', p: 1, borderRadius: '24px', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}>
+      {/* Premium Hero Section */}
+      <Box sx={{
+        textAlign: 'center',
+        py: { xs: 8, md: 10 },
+        mb: 6,
+        borderRadius: '32px',
+        background: darkMode
+          ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
+          : 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Decorative background elements */}
+        <Box sx={{
+          position: 'absolute',
+          top: -100,
+          right: -100,
+          width: 300,
+          height: 300,
+          borderRadius: '50%',
+          background: 'linear-gradient(45deg, #3b82f6 0%, #8b5cf6 100%)',
+          filter: 'blur(80px)',
+          opacity: 0.1
+        }} />
+        <Box sx={{
+          position: 'absolute',
+          bottom: -50,
+          left: -50,
+          width: 200,
+          height: 200,
+          borderRadius: '50%',
+          background: 'linear-gradient(45deg, #ec4899 0%, #f43f5e 100%)',
+          filter: 'blur(60px)',
+          opacity: 0.1
+        }} />
+
+        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
+          <Typography variant="h2" fontWeight="900" gutterBottom sx={{
+            letterSpacing: '-1px',
+            background: 'linear-gradient(45deg, #3b82f6, #8b5cf6)',
+            backgroundClip: 'text',
+            textFillColor: 'transparent',
+            mb: 2
+          }}>
+            Insight World
+          </Typography>
+          <Typography variant="h5" color="text.secondary" sx={{ mb: 6, fontWeight: 500, maxWidth: 600, mx: 'auto' }}>
+            Discover stories that matter. Stay informed with curated news from top publishers.
+          </Typography>
+
+          <Paper
+            component="form"
+            onSubmit={handleSearch}
+            elevation={0}
+            sx={{
+              p: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              width: '100%',
+              maxWidth: 700,
+              mx: 'auto',
+              borderRadius: '20px',
+              border: (theme) => `1px solid ${theme.palette.divider}`,
+              bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(12px)',
+              boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 8px 32px rgba(0,0,0,0.4)' : '0 8px 32px rgba(59, 130, 246, 0.15)',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 12px 40px rgba(0,0,0,0.5)' : '0 12px 40px rgba(59, 130, 246, 0.2)'
+              }
+            }}
+          >
+            <IconButton sx={{ p: '10px' }} aria-label="search">
+              <Search color="primary" />
+            </IconButton>
             <TextField
-              fullWidth
-              placeholder="Search topics, publishers..."
+              sx={{ ml: 1, flex: 1, '& fieldset': { border: 'none' } }}
+              placeholder="Search topics, publishers, or keywords..."
+              variant="outlined"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                startAdornment: <Search color="action" sx={{ mr: 1 }} />,
-                sx: { borderRadius: '16px', border: 'none', '& fieldset': { border: 'none' } }
-              }}
+              InputProps={{ disableUnderline: true }}
             />
-            <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', sm: 'block' } }} />
+            <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
             <Tabs
               value={searchFilter}
               onChange={(e, v) => setSearchFilter(v)}
-              sx={{ minWidth: 150 }}
+              sx={{
+                minHeight: 0,
+                ml: 1,
+                '& .MuiTab-root': {
+                  minHeight: 0,
+                  py: 1,
+                  minWidth: 'auto',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  borderRadius: '8px'
+                },
+                '& .MuiTabs-indicator': { display: 'none' }
+              }}
             >
-              <Tab label="Latest" value="latest" />
-              <Tab label="Popular" value="popular" />
+              <Tab
+                label="Latest"
+                value="latest"
+                sx={{
+                  color: searchFilter === 'latest' ? 'primary.main' : 'text.secondary',
+                  bgcolor: searchFilter === 'latest' ? (theme) => theme.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)' : 'transparent'
+                }}
+              />
+              <Tab
+                label="Popular"
+                value="popular"
+                sx={{
+                  color: searchFilter === 'popular' ? 'primary.main' : 'text.secondary',
+                  bgcolor: searchFilter === 'popular' ? (theme) => theme.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.1)' : 'transparent'
+                }}
+              />
             </Tabs>
-            <Button variant="contained" onClick={handleSearch} sx={{ borderRadius: '16px', px: 4 }}>Search</Button>
-          </Stack>
-        </Box>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                borderRadius: '14px',
+                px: 4,
+                py: 1.5,
+                ml: 2,
+                fontWeight: 700,
+                boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.4)'
+              }}
+            >
+              Search
+            </Button>
+          </Paper>
+        </Container>
       </Box>
 
       {/* Scrollable Categories */}
-      <Box sx={{ mb: 4, display: 'flex', gap: 2, overflowX: 'auto', pb: 2, '&::-webkit-scrollbar': { display: 'none' } }}>
+      <Box sx={{
+        mb: 6,
+        display: 'flex',
+        gap: 1.5,
+        overflowX: 'auto',
+        pb: 2,
+        mx: -2,
+        px: 2,
+        '&::-webkit-scrollbar': { height: 6 },
+        '&::-webkit-scrollbar-thumb': { borderRadius: 3, bgcolor: 'rgba(0,0,0,0.1)' }
+      }}>
         {categories.map((cat) => {
           const catName = typeof cat === 'string' ? cat : cat.name;
           const icons = { 'Technology': '💻', 'Sports': '⚽', 'Nepal': '🏔️', 'Global': '🌍', 'Business': '📈', 'Health': '🏥', 'All': '🔥' };
+          const isActive = activeCategory === catName;
+
           return (
             <Chip
               key={catName}
-              icon={<span>{icons[catName] || '📰'}</span>}
+              icon={<span style={{ fontSize: '1.2rem' }}>{icons[catName] || '📰'}</span>}
               label={catName}
               onClick={() => setActiveCategory(catName)}
               sx={{
-                px: 2, py: 3, borderRadius: '12px', fontSize: '1rem', fontWeight: 700,
-                bgcolor: activeCategory === catName ? 'primary.main' : 'transparent',
-                color: activeCategory === catName ? 'white' : 'text.primary',
-                border: '1.5px solid',
-                borderColor: activeCategory === catName ? 'primary.main' : '#e2e8f0',
-                '&:hover': { bgcolor: activeCategory === catName ? 'primary.dark' : '#f1f5f9' }
+                px: 2,
+                py: 2.5,
+                borderRadius: '16px',
+                fontSize: '0.95rem',
+                fontWeight: isActive ? 700 : 500,
+                background: isActive
+                  ? 'linear-gradient(45deg, #2563eb, #3b82f6)'
+                  : (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#ffffff',
+                color: isActive ? 'white' : 'text.primary',
+                border: (theme) => `1px solid ${isActive ? 'transparent' : theme.palette.divider}`,
+                boxShadow: isActive ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                }
               }}
             />
           );
@@ -202,8 +331,15 @@ const Home = () => {
         {/* Main Content Area */}
         <Grid item xs={12} md={8}>
           <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h5" fontWeight="800">Latest from {activeCategory}</Typography>
-            <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <LocalFireDepartment sx={{ color: 'error.main', mr: 1.5, fontSize: 28 }} />
+              <Typography variant="h5" fontWeight="800">Latest from {activeCategory}</Typography>
+            </Box>
+            <Tabs
+              value={tabValue}
+              onChange={(e, v) => setTabValue(v)}
+              sx={{ '& .MuiTab-root': { minHeight: 40, fontWeight: 700, borderRadius: '10px' } }}
+            >
               <Tab label="All News" />
               <Tab label="For You" />
             </Tabs>
@@ -220,11 +356,16 @@ const Home = () => {
                     display: 'flex',
                     flexDirection: { xs: 'column', sm: 'row' },
                     borderRadius: '24px',
-                    border: '1px solid #f1f5f9',
+                    border: (theme) => `1px solid ${theme.palette.divider}`,
                     overflow: 'hidden',
                     textDecoration: 'none',
                     color: 'inherit',
-                    '&:hover': { border: '1.5px solid #3b82f6' }
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 12px 24px -10px rgba(0, 0, 0, 0.15)',
+                      borderColor: 'primary.main'
+                    }
                   }}
                 >
                   <CardMedia
@@ -275,13 +416,43 @@ const Home = () => {
         {/* Sidebar */}
         <Grid item xs={12} md={4}>
           {/* Quick Discover Grid */}
-          <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: '24px', bgcolor: '#f1f5f9' }}>
-            <Typography variant="h6" fontWeight="800" sx={{ mb: 3 }}>Quick Discover</Typography>
-            <Grid container spacing={2}>
+          {/* Quick Discover Grid */}
+          <Paper elevation={0} sx={{
+            p: 4,
+            mb: 4,
+            borderRadius: '24px',
+            background: (theme) => theme.palette.mode === 'dark'
+              ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
+              : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+            border: (theme) => `1px solid ${theme.palette.divider}`,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.02)'
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+              <AutoAwesome sx={{ color: 'primary.main', mr: 1 }} />
+              <Typography variant="h6" fontWeight="800">Quick Discover</Typography>
+            </Box>
+
+            <Grid container spacing={1.5}>
               {['Nepal', 'Economy', 'AI', 'Cricket', 'Movies', 'Music'].map(tag => (
-                <Grid item xs={4} key={tag}>
-                  <Button fullWidth variant="contained" sx={{ bgcolor: 'white', color: 'text.primary', borderRadius: '12px', textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: 'primary.main', color: 'white' } }}>
-                    {tag}
+                <Grid item xs={6} sm={4} key={tag}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    sx={{
+                      borderRadius: '12px',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      color: 'text.secondary',
+                      borderColor: (theme) => theme.palette.divider,
+                      borderWidth: '1.5px',
+                      '&:hover': {
+                        borderColor: 'primary.main',
+                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.1)' : '#f0f9ff',
+                        color: 'primary.main'
+                      }
+                    }}
+                  >
+                    #{tag}
                   </Button>
                 </Grid>
               ))}
@@ -289,24 +460,78 @@ const Home = () => {
           </Paper>
 
           {/* Featured Publisher Carousel (Mockup) */}
-          <Paper elevation={0} sx={{ p: 4, borderRadius: '24px', border: '1px solid #f1f5f9' }}>
-            <Typography variant="h6" fontWeight="800" sx={{ mb: 3 }}>Trending Publishers</Typography>
-            <Stack spacing={3}>
+          <Paper elevation={0} sx={{
+            p: 4,
+            borderRadius: '24px',
+            border: (theme) => `1px solid ${theme.palette.divider}`,
+            background: (theme) => theme.palette.mode === 'dark'
+              ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
+              : 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+          }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+              <TrendingUp sx={{ color: 'secondary.main', mr: 1 }} />
+              <Typography variant="h6" fontWeight="800">Trending Publishers</Typography>
+            </Box>
+
+            <Stack spacing={2.5}>
               {trendingPublishers.length > 0 ? (
-                trendingPublishers.slice(0, 5).map(pub => (
-                  <Box key={pub._id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                trendingPublishers.slice(0, 5).map((pub, index) => (
+                  <Box
+                    key={pub._id}
+                    component={Link}
+                    to={`/publishers`}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      textDecoration: 'none',
+                      color: 'inherit',
+                      p: 1.5,
+                      borderRadius: '16px',
+                      transition: 'all 0.2s',
+                      '&:hover': { bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)' }
+                    }}
+                  >
                     <Stack direction="row" spacing={2} alignItems="center">
-                      <Avatar src={getImageUrl(pub.profile?.picture)} sx={{ bgcolor: 'primary.main' }}>
-                        {typeof pub.name === 'string' ? pub.name[0].toUpperCase() : '?'}
-                      </Avatar>
+                      <Box sx={{ position: 'relative' }}>
+                        <Avatar
+                          src={getImageUrl(pub.profile?.picture)}
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            bgcolor: 'primary.main',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                          }}
+                        >
+                          {typeof pub.name === 'string' ? pub.name[0].toUpperCase() : '?'}
+                        </Avatar>
+                        <Box sx={{
+                          position: 'absolute',
+                          bottom: 0,
+                          right: -4,
+                          width: 20,
+                          height: 20,
+                          bgcolor: 'white',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '10px',
+                          fontWeight: 'bold',
+                          color: 'text.secondary',
+                          border: '1px solid #eee'
+                        }}>
+                          {index + 1}
+                        </Box>
+                      </Box>
                       <Box>
-                        <Typography fontWeight="700">{pub.name}</Typography>
+                        <Typography fontWeight="700" variant="subtitle2">{pub.name}</Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {pub.articlesCount || 0} Articles • {pub.followersCount || 0} Followers
+                          {pub.articlesCount || 0} Articles
                         </Typography>
                       </Box>
                     </Stack>
-                    <Button size="small" component={Link} to={`/publishers`}>View</Button>
+                    <ArrowForward sx={{ fontSize: 16, color: 'text.disabled', opacity: 0.5 }} />
                   </Box>
                 ))
               ) : (
@@ -317,7 +542,8 @@ const Home = () => {
                 variant="outlined"
                 component={Link}
                 to="/publishers"
-                sx={{ borderRadius: '12px' }}
+                endIcon={<ArrowForward />}
+                sx={{ borderRadius: '12px', mt: 1, textTransform: 'none', fontWeight: 600 }}
               >
                 View All Publishers
               </Button>

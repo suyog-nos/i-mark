@@ -3,6 +3,7 @@ const Article = require('../models/Article');
 const User = require('../models/User');
 const { auth, authorize } = require('../middleware/auth');
 const EmailService = require('../utils/emailService');
+const Notification = require('../models/Notification');
 
 const router = express.Router();
 
@@ -53,7 +54,20 @@ router.put('/articles/:id/approve', auth, authorize('admin'), async (req, res) =
       return res.status(404).json({ error: 'Article not found' });
     }
 
+    // Create in-app notification
+    const notification = await Notification.create({
+      recipient: article.author._id,
+      sender: req.user._id,
+      type: 'article_approved',
+      title: 'Article Published',
+      message: `Great news! Your article "${article.title}" has been approved and published.`,
+      relatedArticle: article._id
+    });
+
     if (req.io) {
+      // Notify author specifically
+      req.io.to(`user_${article.author._id}`).emit('notification', notification);
+      // Broadcast to all users (feed update)
       req.io.emit('article_published', article);
     }
 
@@ -88,6 +102,20 @@ router.put('/articles/:id/reject', auth, authorize('admin'), async (req, res) =>
 
     if (!article) {
       return res.status(404).json({ error: 'Article not found' });
+    }
+
+    // Create in-app notification
+    const notification = await Notification.create({
+      recipient: article.author._id,
+      sender: req.user._id,
+      type: 'article_rejected',
+      title: 'Article Rejected',
+      message: `Your article "${article.title}" was rejected. ${reason ? 'Reason: ' + reason : ''}`,
+      relatedArticle: article._id
+    });
+
+    if (req.io) {
+      req.io.to(`user_${article.author._id}`).emit('notification', notification);
     }
 
     // Trigger email notification

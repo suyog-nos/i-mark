@@ -105,8 +105,8 @@ router.get('/most-read', auth, authorize('admin'), async (req, res) => {
     }
 });
 
-// Get Publisher Analytics
-router.get('/publisher', auth, async (req, res) => {
+// Get Publisher Analytics (Publisher or Admin only)
+router.get('/publisher', auth, authorize('publisher', 'admin'), async (req, res) => {
     try {
         let authorId = req.user._id;
 
