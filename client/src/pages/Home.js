@@ -52,6 +52,13 @@ const Home = () => {
   const { isAdmin, isPublisher, token, isAuthenticated, user } = useAuth();
   const theme = useTheme();
 
+  /*
+   * state-management-initialization
+   * Orchestrates the complex local state required for a dynamic landing page.
+   * - Data Containers: Articles, Categories, Publishers.
+   * - Interactive State: Search queries, Filters, Active Tabs.
+   * - Loading/Persistence: Bookmarks and Loading flags.
+   */
   const [articles, setArticles] = useState([]);
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,6 +79,12 @@ const Home = () => {
   const [trendingPublishers, setTrendingPublishers] = useState([]);
 
   useEffect(() => {
+    /*
+     * data-aggregation-pipeline
+     * Executes concurrent API requests to hydrate the page with initial content.
+     * Uses Promise.all to minimize network waterfall effects, ensuring all critical data (articles, categories, publishers) arrives simultaneously.
+     * Filters are applied server-side via query parameters.
+     */
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -116,6 +129,11 @@ const Home = () => {
     }
   }, [tabValue, isAuthenticated]);
 
+  /*
+   * feed-personalization-algorithm
+   * Retrieves a curated list of articles tailored to the authenticated user's preferences.
+   * Triggered only when the 'For You' tab is active to conserve resources.
+   */
   const fetchPersonalizedFeed = async () => {
     try {
       const response = await axios.get('/api/articles?limit=20');
@@ -144,7 +162,12 @@ const Home = () => {
   return (
     <Container maxWidth="xl">
 
-      {/* Premium Hero Section */}
+      {/* 
+        * premium-hero-presentation
+        * The visual anchor of the landing page.
+        * Features a dynamic gradient background that adapts to theme preferences (Dark/Light Mode).
+        * Housing the primary search and discovery interface.
+        */}
       <Box sx={{
         textAlign: 'center',
         py: { xs: 8, md: 10 },
@@ -281,7 +304,11 @@ const Home = () => {
         </Container>
       </Box>
 
-      {/* Scrollable Categories */}
+      {/* 
+        * category-navigation-scroller
+        * A horizontally scrollable navigation strip allowing quick filtering by topic.
+        * Implements custom scrollbar styling for a polished user experience on desktop.
+       */}
       <Box sx={{
         mb: 6,
         display: 'flex',

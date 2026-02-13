@@ -41,6 +41,12 @@ const Notifications = () => {
         deleteNotification
     } = useNotifications();
 
+    /*
+     * visual-mapping-strategy
+     * Translates backend notification types into semantic UI iconography.
+     * Ensures users can quickly scan and identify the nature of each alert 
+     * (e.g., Article vs Comment vs System Update).
+     */
     const getIcon = (type) => {
         switch (type) {
             case 'new_article': return <Article color="primary" />;
@@ -59,6 +65,11 @@ const Notifications = () => {
         );
     }
 
+    /*
+     * derived-metrics
+     * Calculates the unread count in real-time from the local notification array.
+     * This avoids needing a separate state variable that could drift out of sync.
+     */
     const unreadCount = notifications.filter(n => !n.isRead).length;
 
     return (

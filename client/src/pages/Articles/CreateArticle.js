@@ -19,6 +19,13 @@ import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 const CreateArticle = () => {
+  /*
+   * editorial-state-management
+   * Controls the complex form state for article composition.
+   * - Content Data: Title, body, category, tags.
+   * - Workflow State: Draft vs Published vs Scheduled.
+   * - Media Assets: Validated image file containers.
+   */
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -49,6 +56,12 @@ const CreateArticle = () => {
     }
   };
 
+  /*
+   * preview-persistence-handler
+   * Temporarily serializes the current form state to Session Storage.
+   * Allows the preview functionality to operate without commiting data to the backend database.
+   * Creates an ephemeral URL for the image blob to render it in the preview context.
+   */
   const handlePreview = () => {
     const previewData = {
       ...formData,
@@ -58,6 +71,12 @@ const CreateArticle = () => {
     navigate('/article-preview');
   };
 
+  /*
+   * multipart-submission-handler
+   * Constructs a FormData object to handle mixed content types (Text + Binary Image).
+   * Appends all editorial fields and the file asset (if present) before transmission.
+   * Implements error handling for network failures or validation rejection.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

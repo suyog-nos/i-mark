@@ -41,6 +41,13 @@ const Articles = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState([]);
 
+  /*
+   * live-feed-controller
+   * Manages the main news stream with real-time capabilities.
+   * - Data Source: Fetches paginated articles from the REST API.
+   * - Real-time Sync: Listens for 'article_published' socket events to instantly 
+     inject new content without requiring a manual page refresh.
+   */
   const socket = useSocket();
 
   useEffect(() => {
@@ -66,6 +73,13 @@ const Articles = () => {
     }
   };
 
+  /*
+   * query-builder-engine
+   * Constructs complex filter queries for the backend.
+   * - Pagination: Manages offset/limit.
+   * - Sorting: Handles declarative sort keys (createdAt, views, likes).
+   * - Filtering: Appends optional search text and category filters only if active.
+   */
   const fetchArticles = async () => {
     try {
       setLoading(true);
@@ -89,6 +103,11 @@ const Articles = () => {
     }
   };
 
+  /*
+   * interaction-handlers
+   * Resets pagination to the first page whenever a filter criterion changes.
+   * This prevents "Empty Page" states (e.g., being on Page 5 of "All" but "Sports" only has 2 pages).
+   */
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
     setPage(1);

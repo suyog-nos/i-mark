@@ -40,6 +40,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 const ArticleModeration = () => {
+    /*
+     * moderation-queue-controller
+     * Manages the review pipeline for user-submitted content.
+     * - Filter State: Toggles between different lifecycle stages (Pending, Rejected, Published).
+     * - Action Dialogs: Controls the modal UI for providing rejection reasons or feedback.
+     */
     const { token } = useAuth();
     const navigate = useNavigate();
     const [filter, setFilter] = useState('pending');
@@ -74,6 +80,12 @@ const ArticleModeration = () => {
         }
     }, [token, filter]);
 
+    /*
+     * decision-enforcement-logic
+     * Applies the moderator's verdict to a specific article.
+     * Maps the UI action (Approve/Reject) to the corresponding backend API endpoint.
+     * Updates the local state immediately to reflect the change without requiring a full reload.
+     */
     const handleAction = async (id, newStatus, message = '') => {
         try {
             let endpoint = '';

@@ -30,6 +30,11 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 const Register = () => {
+  /*
+   * registration-state-container
+   * Manages the extended data set required for new user onboarding.
+   * Includes fields for identity (name, email), security (password), and preferences (role, language).
+   */
   const { t } = useTranslation();
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -53,6 +58,12 @@ const Register = () => {
     });
   };
 
+  /*
+   * submission-validator
+   * Performs client-side validation logic before initiating the API request.
+   * Ensures password integrity (match check) to reduce server rejection rates.
+   * Delegates the actual creation logic to the AuthContext provider.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -71,13 +82,13 @@ const Register = () => {
       role: formData.role,
       language: formData.language
     });
-    
+
     if (result.success) {
       navigate('/dashboard');
     } else {
       setError(result.error);
     }
-    
+
     setLoading(false);
   };
 
@@ -143,9 +154,9 @@ const Register = () => {
             <Box sx={{ p: { xs: 3, sm: 4 } }}>
               {error && (
                 <Fade in={!!error}>
-                  <Alert 
-                    severity="error" 
-                    sx={{ 
+                  <Alert
+                    severity="error"
+                    sx={{
                       mb: 3,
                       borderRadius: '12px',
                       '& .MuiAlert-icon': {

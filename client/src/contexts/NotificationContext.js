@@ -18,6 +18,13 @@ export const NotificationProvider = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
 
+    /*
+     * notification-polling-service
+     * Retrieves the user's alert history from the server.
+     * separation of concerns:
+     * - notifications: The full list of alert objects.
+     * - unreadCount: An integer for the notification badge UI.
+     */
     const fetchNotifications = useCallback(async () => {
         if (!isAuthenticated || !token) return;
 
@@ -42,6 +49,12 @@ export const NotificationProvider = ({ children }) => {
         fetchNotifications();
     }, [fetchNotifications]);
 
+    /*
+     * read-receipt-controller
+     * Marks a specific notification as read on the server.
+     * Optimistically updates the local state (decrements unread count) 
+     * to ensure the UI feels responsive without waiting for network roundtrip.
+     */
     const markAsRead = async (id) => {
         try {
             await axios.put(`/api/notifications/${id}/read`, {}, {

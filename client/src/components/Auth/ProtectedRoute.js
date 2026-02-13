@@ -4,6 +4,13 @@ import { useAuth } from '../../contexts/AuthContext';
 import { CircularProgress, Box } from '@mui/material';
 
 const ProtectedRoute = ({ children, roles = [] }) => {
+  /*
+   * security-gatekeeper
+   * Wrapper component that enforces Role-Based Access Control (RBAC).
+   * - Authentication Check: Redirects unauthenticated users to Login.
+   * - Authorization Check: Redirects authenticated users without the required role (e.g., Reader trying to access Admin) to Home.
+   * - Loading State: Prevents premature redirection while the session is validating.
+   */
   const { user, loading, isAuthenticated } = useAuth();
 
   if (loading) {

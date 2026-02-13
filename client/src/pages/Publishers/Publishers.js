@@ -31,6 +31,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 const Publishers = () => {
+  /*
+   * discovery-and-subscription-manager
+   * Facilitates the exploration of content creators on the platform.
+   * - Discovery: Searchable directory of verified publishers.
+   * - Persistence: Manages the 'Follow' state using local storage (for guest/quick access) & state sync.
+   */
   const { t } = useTranslation();
   const { user, token, isAuthenticated } = useAuth();
   const [publishers, setPublishers] = useState([]);
@@ -52,6 +58,11 @@ const Publishers = () => {
     return cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
   };
 
+  /*
+   * directory-search-engine
+   * Performs dynamic queries to the backend to retrieve publisher profiles.
+   * Triggered by the search input debounce or initial component load.
+   */
   const fetchPublishers = async () => {
     try {
       const res = await axios.get(`/api/users/publishers/list?search=${search}`);

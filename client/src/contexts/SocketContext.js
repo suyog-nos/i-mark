@@ -16,6 +16,12 @@ export const SocketProvider = ({ children }) => {
     const { user, isAuthenticated } = useAuth();
     const [socket, setSocket] = useState(null);
 
+    /*
+     * socket-lifecycle-manager
+     * Establishes a persistent full-duplex connection to the backend.
+     * - Initialization: Connects to the API server origin.
+     * - Teardown: Ensures clean disconnection when the component unmounts to prevent memory leaks.
+     */
     useEffect(() => {
         // Connect to the backend socket server
         const newSocket = io(window.location.origin.replace('3000', '5000'), {
@@ -28,6 +34,11 @@ export const SocketProvider = ({ children }) => {
         return () => newSocket.close();
     }, []);
 
+    /*
+     * channel-subscription-handler
+     * Joins user-specific private rooms once authentication is confirmed.
+     * Enables targeted delivery of notifications (e.g., "Your article was approved").
+     */
     useEffect(() => {
         if (socket && isAuthenticated && user) {
             // Join a private room for user-specific notifications

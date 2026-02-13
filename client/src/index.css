@@ -1,6 +1,12 @@
 /* ============================================
    GLOBAL RESET & BASE STYLES
    ============================================ */
+
+/*
+ * box-model-normalization
+ * Forces all elements to include padding and border in their total width/height.
+ * This simplifies layout calculations and prevents unexpected scrollbars.
+ */
 * {
   box-sizing: border-box;
 }
@@ -9,6 +15,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/*
+ * typography-foundation
+ * Sets the default font stack to a system-native approach for performance 
+ * and familiarity, falling back to safe sans-serifs.
+ * - font-smoothing: Enables anti-aliasing for crisper text on high-DPI screens.
+ * - Base Font Size: 18px for improved readability on modern displays.
+ */
 body {
   margin: 0;
   padding: 0;
@@ -18,7 +31,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
   font-size: 18px;
-  /* Increased base size */
 }
 
 code {
@@ -49,6 +61,14 @@ footer {
 /* ============================================
    SPACING SYSTEM (8px base unit)
    ============================================ */
+
+/*
+ * design-tokens-registry
+ * Centralizes magic numbers into semantic variables to ensure visual consistency.
+ * - Spacing: Follows an 8px grid system (xs=4px, sm=8px, md=16px).
+ * - Breakpoints: Defines max-widths for various container sizes.
+ * - Gutters: Standardizes padding across different device form factors.
+ */
 :root {
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -78,7 +98,12 @@ footer {
    CONSISTENT CONTAINER OVERRIDES
    ============================================ */
 
-/* Ensure MUI containers use full width properly */
+/*
+ * responsive-container-logic
+ * Enforces consistent horizontal gutters (padding) on the main container 
+ * across all breakpoints. This prevents content from touching the screen edges 
+ * on mobile and ensures alignment on larger screens.
+ */
 .MuiContainer-root {
   padding-left: var(--page-padding-mobile) !important;
   padding-right: var(--page-padding-mobile) !important;
@@ -180,6 +205,11 @@ footer {
    CUSTOM SCROLLBAR
    ============================================ */
 
+/*
+ * visual-polish-scrollbar
+ * Replaces the default OS scrollbar with a slim, themed version 
+ * that matches the application's aesthetic. Handles both light and dark modes.
+ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -198,7 +228,7 @@ footer {
   background: #64748b;
 }
 
-/* Dark mode scrollbar */
+/* Dark mode scrollbar configuration */
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-track {
     background: #1e293b;
@@ -253,6 +283,12 @@ img {
    PAGE TRANSITION ANIMATION
    ============================================ */
 
+/*
+ * micro-interaction-transitions
+ * Defines a subtle entry animation for route changes.
+ * The 'fadeIn' keyframes introduce pages with a slight upward drift and opacity fade,
+ * making the app feel faster and more polished than a hard cut.
+ */
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -98,7 +98,7 @@ npm run dev:full
 - `/utils`: Helper scripts for validation and seeding.
 - `/uploads`: Storage for uploaded article images.
 
-## 🛠️ System Management & Troubleshooting
+##  System Management & Troubleshooting
 
 ### Stopping the Application
 To stop the server, press `Ctrl + C` in your terminal.
@@ -126,5 +126,5 @@ If the application behaves unexpectedly:
 2. Run `npx kill-port 5000 3000` to clear ports.
 3. Content `npm run dev:full` to restart.
 
-## 📜 License
+##  License
 Academic Project - Imark Internship Program.

@@ -53,7 +53,12 @@ const Profile = () => {
     return cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
   };
 
-  // Form States
+  /*
+   * form-state-managers
+   * Segregates public profile data from sensitive credential data.
+   * - profileForm: Handles bio, contact info, and preferences.
+   * - passwordForm: Handles the secure password change workflow.
+   */
   const [profileForm, setProfileForm] = useState({
     name: '',
     bio: '',
@@ -73,6 +78,12 @@ const Profile = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  /*
+   * data-hydration
+   * Populates the form with existing user data upon component mount.
+   * Also retrieves locally stored interests which are not kept in the relational DB 
+   * to provide client-side personalization without backend schema changes.
+   */
   useEffect(() => {
     if (user) {
       setProfileForm({
@@ -145,6 +156,12 @@ const Profile = () => {
     setLoading(false);
   };
 
+  /*
+   * security-transaction
+   * Handles the critical password update process.
+   * Enforces client-side validation (matching passwords) before attempting 
+   * the server request to minimize API load and improve UX.
+   */
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {

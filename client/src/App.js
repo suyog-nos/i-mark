@@ -10,6 +10,11 @@ import { NotificationProvider } from './contexts/NotificationContext';
 import { BookmarkProvider } from './contexts/BookmarkContext';
 import { SocketProvider } from './contexts/SocketContext';
 
+/**
+ * component-registry-imports
+ * Centralized import block for application layout shells, routing guards, and page-level components.
+ * Organized by semantic category (Layout, Auth, Common) and Domain (Pages).
+ */
 // Components
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
@@ -53,7 +58,11 @@ const AppRoutes = () => {
 
   return (
     <Routes key={user?.id || 'guest'}>
-      {/* Public Routes */}
+      {/* 
+        * public-route-definitions
+        * Accessible to all visitors regardless of authentication state.
+        * Serves as the entry point for discovery and acquisition workflows.
+       */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -62,7 +71,11 @@ const AppRoutes = () => {
       <Route path="/publishers" element={<Publishers />} />
       <Route path="/categories" element={<Categories />} />
 
-      {/* Protected Routes */}
+      {/* 
+        * protected-route-enforcement
+        * Implements Role-Based Access Control (RBAC) via the ProtectedRoute wrapper.
+        * Routes are gated based on specific roles (Reader, Publisher, Admin) ensuring security and compliance.
+       */}
       <Route path="/profile" element={
         <ProtectedRoute>
           <Profile />
@@ -114,7 +127,11 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
 
-      {/* Admin Specific Routes - Grouped for Clarity */}
+      {/* 
+        * admin-module-routes
+        * High-privilege area restricted strictly to the 'admin' role.
+        * Contains sensitive resource management and system oversight capabilities.
+       */}
       <Route path="/admin" element={
         <ProtectedRoute roles={['admin']}>
           <AdminDashboard />
@@ -167,6 +184,14 @@ const AppContent = () => {
         }
       `}</style>
       <CssBaseline />
+      {/* 
+       * provider-hierarchy-composition
+       * Establishes the global context tree for the application.
+       * Order is critical: 
+       * 1. I18nProvider: Makes translation functions available.
+       * 2. AuthProvider: Initializes user session.
+       * 3. Domain Providers (Notification, Bookmark, Socket): Depend on Auth state.
+       */}
       <I18nextProvider i18n={i18n}>
         <AuthProvider>
           <NotificationProvider>
@@ -176,6 +201,11 @@ const AppContent = () => {
                   <div className="App">
                     <div id="back-to-top-anchor" />
                     <Navbar />
+                    {/* 
+                     * layout-shell-integration
+                     * Wraps the dynamic route content with the persistent application shell (Navbar/Footer).
+                     * Applies a transition class to animate route changes.
+                     */}
                     <main style={{ flex: '1 0 auto' }} className="page-transition">
                       <AppRoutes />
                     </main>

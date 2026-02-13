@@ -31,6 +31,11 @@ import { useBookmarks } from '../../contexts/BookmarkContext';
 import axios from 'axios';
 
 const ArticleDetail = () => {
+  /*
+   * resource-resolution-context
+   * Extracts the unique article identifier from the URL parameters.
+   * Initializes access control hooks to determine if the user has read/write permissions.
+   */
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, user, isAdmin, isPublisher, token } = useAuth();
@@ -40,6 +45,11 @@ const ArticleDetail = () => {
   const [liked, setLiked] = useState(false);
   const isBookmarked = checkBookmarked(id);
 
+  /*
+   * data-hydration-lifecycle
+   * Triggers the article fetching sequence whenever the ID or User context changes.
+   * Ensures the view reflects the most current data state.
+   */
   useEffect(() => {
     fetchArticle();
   }, [id, user]);
@@ -66,6 +76,11 @@ const ArticleDetail = () => {
     }
   };
 
+  /*
+   * interaction-handler-optimistic
+   * Manages user engagement actions (Likes).
+   * Implements optimistic UI updates to provide immediate feedback before the server response confirms the action.
+   */
   const handleLike = async () => {
     if (!isAuthenticated) return;
 
@@ -225,7 +240,13 @@ const ArticleDetail = () => {
               </Paper>
             )}
 
-            {/* Article Content with Paywall */}
+            {/* 
+              * content-rendering-with-paywall
+              * Renders the main article body text.
+              * Implements a "Soft Paywall" mechanism:
+              * - Full access for authenticated users.
+              * - Truncated view with CSS gradient mask for unauthenticated guests.
+              */}
             <Typography
               variant="body1"
               sx={{

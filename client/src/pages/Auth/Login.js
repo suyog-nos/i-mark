@@ -24,9 +24,21 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 const Login = () => {
+  /*
+   * dependency-injection
+   * Accesses internationalization helpers and authentication services.
+   * Initializes navigation hooks for post-login redirection.
+   */
   const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  /*
+   * local-state-management
+   * Maintains the controlled inputs for credentials and ephemeral UI states.
+   * - formData: Captures user input.
+   * - uiState: Manages loading indicators, error messages, and password visibility toggles.
+   */
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -42,22 +54,34 @@ const Login = () => {
     });
   };
 
+  /*
+   * authentication-handler
+   * Orchestrates the login sequence:
+   * 1. Resets error states and engages loading lock.
+   * 2. Invokes the auth context provider to perform the API handshake.
+   * 3. Handles success (redirection) or failure (error display) outcomes.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     const result = await login(formData.email, formData.password);
-    
+
     if (result.success) {
       navigate('/dashboard');
     } else {
       setError(result.error);
     }
-    
+
     setLoading(false);
   };
 
+  /*
+   * layout-composition
+   * Renders a centered, responsive card layout with a glassmorphism effect.
+   * adaptively scales padding and margins based on the viewport breakpoint (xs/sm).
+   */
   return (
     <Box
       sx={{
@@ -120,9 +144,9 @@ const Login = () => {
             <Box sx={{ p: { xs: 4, sm: 5 } }}>
               {error && (
                 <Fade in={!!error}>
-                  <Alert 
-                    severity="error" 
-                    sx={{ 
+                  <Alert
+                    severity="error"
+                    sx={{
                       mb: 3,
                       borderRadius: '12px',
                       '& .MuiAlert-icon': {

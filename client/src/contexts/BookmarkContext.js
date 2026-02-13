@@ -17,6 +17,12 @@ export const BookmarkProvider = ({ children }) => {
     const [bookmarks, setBookmarks] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    /*
+     * bookmark-synchronization-engine
+     * Fetches the user's saved article list from the backend.
+     * Authenticated-only operation: Returns early if no valid token is present.
+     * updates the local state to reflect the persisted database state.
+     */
     const fetchBookmarks = useCallback(async () => {
         if (!isAuthenticated || !token) return;
 
@@ -38,6 +44,14 @@ export const BookmarkProvider = ({ children }) => {
         fetchBookmarks();
     }, [fetchBookmarks]);
 
+    /*
+     * toggle-handler-optimistic
+     * Manages the add/remove logic for bookmarks.
+     * Updates the UI immediately based on the server response.
+     * - If added: Appends to the local list.
+     * - If removed: Filters out from the local list.
+     * Returns the new boolean state for the UI button.
+     */
     const toggleBookmark = async (article) => {
         if (!isAuthenticated || !token) return;
 

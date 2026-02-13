@@ -52,6 +52,13 @@ ChartJS.register(
 );
 
 const PublisherAnalytics = () => {
+    /*
+     * performance-metrology-engine
+     * Calculates and visualizes key performance indicators (KPIs) for the publisher's content.
+     * - Aggregates engagement metrics (Views, Likes, Shares).
+     * - Analyzes content lifecycle distribution (Published vs Pending).
+     * - Generates trend data for visual graphing.
+     */
     const { user, token, isPublisher, isAdmin } = useAuth();
     const { id: routeId } = useParams();
     const [loading, setLoading] = useState(true);
@@ -59,6 +66,12 @@ const PublisherAnalytics = () => {
     const [articles, setArticles] = useState([]);
     const [trends, setTrends] = useState([]);
 
+    /*
+     * metrics-aggregation-pipeline
+     * Fetches raw analytic data from the backend and transforms it into chart-ready structures.
+     * Computes derived statistics for the summary cards.
+     * Supports both "Self" view (for Publishers) and "Inspection" view (for Admins viewing a publisher).
+     */
     useEffect(() => {
         const fetchAnalytics = async () => {
             try {

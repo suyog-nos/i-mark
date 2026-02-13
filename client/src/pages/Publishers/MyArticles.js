@@ -34,6 +34,12 @@ import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 
 const MyArticles = () => {
+    /*
+     * editorial-dashboard-controller
+     * Provides the publisher with a comprehensive view of their content portfolio.
+     * - Portfolio Retrieval: Fetches authenticated user's articles from the backend.
+     * - State Management: Handles loading states and error boundaries for network requests.
+     */
     const { token, user, isPublisher } = useAuth();
     const navigate = useNavigate();
     const [articles, setArticles] = useState([]);
@@ -70,6 +76,14 @@ const MyArticles = () => {
         }
     };
 
+    /*
+     * visual-status-indicators
+     * Maps article lifecycle states to semantic UI colors.
+     * - Published: Success (Green)
+     * - Pending: Warning (Orange/Yellow)
+     * - Rejected: Error (Red)
+     * - Scheduled: Info (Blue)
+     */
     const getStatusColor = (status) => {
         switch (status) {
             case 'published': return 'success';
@@ -80,6 +94,12 @@ const MyArticles = () => {
         }
     };
 
+    /*
+     * scheduling-countdown-timer
+     * A utility component that renders a real-time countdown for future-dated content.
+     * Uses a 1-second interval to update the display.
+     * Automatically clears the interval on unmount to prevent memory leaks.
+     */
     const Countdown = ({ targetDate }) => {
         const [timeLeft, setTimeLeft] = useState('');
 

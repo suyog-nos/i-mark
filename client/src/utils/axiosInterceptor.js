@@ -1,8 +1,13 @@
 import axios from 'axios';
 
 /**
- * Setup Axios interceptor to handle 401 responses
- * @param {function} logoutCallback - Function to call on 401 response
+ * global-error-boundary
+ * Intercepts all HTTP responses to enforce session security.
+ * - 401 Handling: Automatically invalidates the local session and redirects to login 
+ *   when the backend rejects a token (expired or tampered).
+ * - Component Passthrough: Allows other error codes (400, 403, 500) to propagate 
+ *   to individual components for specific handling.
+ * @param {function} logoutCallback - The cleanup routine from AuthContext.
  */
 export const setupAxiosInterceptor = (logoutCallback) => {
     // Response interceptor to catch 401 errors

@@ -41,6 +41,12 @@ ChartJS.register(
 );
 
 const AdminDashboard = () => {
+  /*
+   * administrative-context
+   * Validates high-level privileges and initializes system-wide monitoring state.
+   * - stats: Aggregates metrics for users, articles, and engagement.
+   * - fail-safe: Implements default values to ensure UI stability during partial API failures.
+   */
   const { token, isAdmin, user } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
@@ -59,6 +65,13 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    /*
+     * resilient-data-fetching
+     * Executes a parallel data retrieval strategy with granular error isolation.
+     * Uses a 'safeFetch' wrapper to ensure that a failure in one widget (e.g., Trends) 
+     * does not crash the entire dashboard.
+     * Aggregates distinct data streams into a unified 'stats' object for rendering.
+     */
     const fetchAnalytics = async () => {
       try {
         setLoading(true);

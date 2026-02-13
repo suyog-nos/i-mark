@@ -2,6 +2,11 @@ import React from 'react';
 import { Box, Typography, Container } from '@mui/material';
 
 const Footer = () => {
+  /*
+   * permanent-site-footer
+   * A static presentational component displayed at the bottom of the viewport/page.
+   * Renders copyright information and adapts to the current theme mode (Light/Dark).
+   */
   return (
     <Box
       component="footer"
@@ -18,7 +23,7 @@ const Footer = () => {
     >
       <Container maxWidth="xl">
         <Typography variant="body2" align="center" color="text.secondary">
-          © 2024 News Portal. All rights reserved.
+          © 2025 News Portal. All rights reserved.
         </Typography>
       </Container>
     </Box>

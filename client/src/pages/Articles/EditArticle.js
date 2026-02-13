@@ -22,6 +22,12 @@ import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 
 const EditArticle = () => {
+  /*
+   * editorial-context-hydration
+   * Initializes the editor with existing resource data.
+   * - Retrieves the article ID from the route.
+   * - Prepares local state containers for form data and media assets.
+   */
   const { t } = useTranslation();
   const { id } = useParams();
   const { token } = useAuth();
@@ -45,6 +51,12 @@ const EditArticle = () => {
     fetchArticle();
   }, [id]);
 
+  /*
+   * data-synchronization
+   * Fetches the authoritative state of the article from the backend.
+   * Populates the form fields to allow for "Modify-in-Place" editing.
+   * Handles the resolution of remote image paths to local preview URLs.
+   */
   const fetchArticle = async () => {
     try {
       const res = await axios.get(`/api/articles/${id}`, {
@@ -92,6 +104,13 @@ const EditArticle = () => {
     navigate('/article-preview');
   };
 
+  /*
+   * atomic-update-transaction
+   * Packages the delta changes (or full state) into a multipart request.
+   * - Text Fields: Appended as standard form data.
+   * - Binary Assets: New images are attached only if modified.
+   * - Authorization: Bearer token enforces ownership/admin rights on the server.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);

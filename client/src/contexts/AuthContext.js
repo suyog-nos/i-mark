@@ -14,6 +14,11 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  /*
+   * state-initialization-and-defaults
+   * Manages the global state for user identity, loading status, and persistent authentication tokens.
+   * Configures base Axios headers to inject the Authorization token into every outgoing API request.
+   */
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -27,7 +32,11 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  // Setup Axios interceptor for 401 responses
+  /*
+   * security-interceptor-configuration
+   * Attaches a response interceptor to globally catch 401 Unauthorized errors.
+   * Triggers an automatic logout to sanitize client state when the session becomes invalid.
+   */
   useEffect(() => {
     const interceptorId = setupAxiosInterceptor(logout);
 
@@ -37,7 +46,11 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  // Check if user is logged in on app start
+  /*
+   * session-hydration-logic
+   * Executes on application launch to validate the stored token and retrieve the current user's profile.
+   * Performs client-side expiry (JWT) checks before attempting network verification to reduce unnecessary API calls.
+   */
   useEffect(() => {
     const checkAuth = async () => {
       if (token) {
@@ -121,6 +134,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /*
+   * context-value-exposure
+   * Exports the authentication interface to the rest of the application.
+   * Includes derived boolean flags (isAdmin, isPublisher) to simplify role-based conditional rendering in UI components.
+   * CRITICAL: Exposes the raw token for edge cases where manual header construction is required.
+   */
   const value = {
     user,
     token,  // CRITICAL: Export token so components can use it for API calls

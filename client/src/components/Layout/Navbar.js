@@ -44,6 +44,14 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
 
 const Navbar = () => {
+  /*
+   * navigation-controller
+   * The primary header component serving as the application's command center.
+   * Integrates multiple distinct state contexts:
+   * - Auth: For user identity and role verification.
+   * - Theme: For global visual preference toggling (Dark/Light).
+   * - Notifications: For real-time alert badging.
+   */
   const { user, logout, isAuthenticated, isAdmin, isPublisher, loading } = useAuth();
   const { t, i18n } = useTranslation();
   const { darkMode, toggleDarkMode } = useCustomTheme();
@@ -54,6 +62,12 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { unreadCount } = useNotifications();
 
+  /*
+   * asset-resolution-helper
+   * Normalizes image paths from the backend (which may use Windows backslashes) 
+   * to browser-friendly forward slash URLs.
+   * Handles both local static files and remote CDN links.
+   */
   const getImageUrl = (path) => {
     if (!path || typeof path !== 'string') return '';
     if (path.startsWith('http')) return path;
@@ -137,7 +151,13 @@ const Navbar = () => {
           </Typography>
         </Box>
 
-        {/* Desktop Navigation */}
+        {/* 
+          * responsive-navigation-logic
+          * Implements an adaptive strategy:
+          * - Desktop: Displays a horizontal list of primary action buttons.
+          * - Mobile: Collapses actions into a hamburger menu drawer (rendered below).
+          * Uses Material-UI breakpoints to trigger the layout shift.
+          */}
         {!isMobile && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flexGrow: 1 }}>
             <Button
@@ -315,6 +335,14 @@ const Navbar = () => {
             </IconButton>
           )}
 
+          {/* 
+            * role-based-menu-filtering
+            * Dynamically constructs the user profile menu based on security clearance.
+            * - Admin: Shows Control Panel access.
+            * - Publisher: Shows Dashboard and Create Article options.
+            * - Reader: Shows standard Dashboard.
+            * - Guest: Shows Login/Register alternatives.
+            */}
           {!loading && (
             isAuthenticated ? (
               <div>

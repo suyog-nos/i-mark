@@ -1,7 +1,11 @@
 /**
- * Decode JWT token and extract payload
- * @param {string} token - JWT token
- * @returns {object|null} - Decoded payload or null if invalid
+ * client-side-token-parser
+ * Decodes the JWT payload to extract user identity and claims (ID, Role)
+ * without making a network request. This allows immediate UI personalization
+ * (e.g., showing "Admin Dashboard" link) while the validity is cryptographically
+ * verified by the backend on every API call.
+ * @param {string} token - The raw Base64 encoded JWT string.
+ * @returns {object|null} - The JSON payload or null if parsing fails.
  */
 export const decodeToken = (token) => {
     try {

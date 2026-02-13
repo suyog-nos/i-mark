@@ -36,6 +36,14 @@ import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 
 const StaffManagement = () => {
+    /*
+     * user-administration-interface
+     * Central control panel for managing platform users.
+     * Capabilities:
+     * - Role Assignment: Elevating users to Publishers or Admins.
+     * - Status Control: Activating or banning user accounts.
+     * - Staff Oversight: Monitoring login activity and access levels.
+     */
     const { token } = useAuth();
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
@@ -71,6 +79,12 @@ const StaffManagement = () => {
         }
     }, [token]);
 
+    /*
+     * role-escalation-handler
+     * Modifies the security clearance of a target user.
+     * CRITICAL: This operation grants or revokes administrative/publishing privileges.
+     * Updates are persisted to the backend and reflected immediately in the UI.
+     */
     const handleRoleChange = async () => {
         try {
             await axios.put(`/api/users/${selectedUser._id}/role`,

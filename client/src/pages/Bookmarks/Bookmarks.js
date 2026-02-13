@@ -29,6 +29,12 @@ import { useBookmarks } from '../../contexts/BookmarkContext';
 import { useTranslation } from 'react-i18next';
 
 const Bookmarks = () => {
+    /*
+     * bookmark-view-controller
+     * A dedicated interface for managing the user's personal reading list.
+     * subscribes to the global BookmarkContext to receive real-time updates 
+     * when items are added or removed from other parts of the application.
+     */
     const { t } = useTranslation();
     const { bookmarks, loading, toggleBookmark } = useBookmarks();
 
@@ -64,6 +70,11 @@ const Bookmarks = () => {
                 </Typography>
             </Box>
 
+            {/* 
+              * empty-state-handler
+              * Provides constructive feedback and navigation cues when the list is empty.
+              * encourages user engagement by directing them to the main feed.
+              */}
             {bookmarks.length === 0 ? (
                 <Fade in>
                     <Paper

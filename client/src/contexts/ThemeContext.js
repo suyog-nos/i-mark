@@ -12,6 +12,12 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
+  /*
+   * theme-persistence-layer
+   * Persists the user's visual preference (Dark/Light) to LocalStorage.
+   * Ensures the preference survives page reloads and session modifications.
+   * Defaults to 'false' (Light Mode) if no prior setting is found.
+   */
   const [darkMode, setDarkMode] = useState(() => {
     const savedMode = localStorage.getItem('darkMode');
     return savedMode ? JSON.parse(savedMode) : false;
@@ -25,6 +31,13 @@ export const ThemeProvider = ({ children }) => {
     setDarkMode(!darkMode);
   };
 
+  /*
+   * design-system-configuration
+   * Constructs the Material-UI theme object based on the current mode.
+   * - Palette: Defines semantic colors (Primary, Secondary, Success, etc.) with dark/light variants.
+   * - Typography: Configures the global font stack (Inter/Roboto) and heading scales.
+   * - Component Overrides: Globally restyles MUI components (Buttons, Cards, Inputs) to match the custom aesthetic (Shadows, Radii, Gradients).
+   */
   const getTheme = () => createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',

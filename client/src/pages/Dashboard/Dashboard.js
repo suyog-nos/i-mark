@@ -33,9 +33,22 @@ import {
 } from '@mui/icons-material';
 
 const Dashboard = () => {
+  /*
+   * role-based-dashboard-engine
+   * Renders a personalized landing hub based on the user's security clearance.
+   * - Feature Flags: Dynamically selects the appropriate toolset (Admin vs Publisher vs Reader).
+   * - Layout Strategy: Uses configuration arrays to drive the rendering of feature cards.
+   */
   const { user, isAdmin, isPublisher } = useAuth();
   const { t } = useTranslation();
 
+  /*
+   * feature-registry
+   * Definitions for role-specific capabilities.
+   * - Readers: Content consumption and personalization tools.
+   * - Publishers: Content creation and analytics tracking.
+   * - Admins: System oversight and moderation controls.
+   */
   const readerFeatures = [
     { title: 'My Bookmarks', desc: 'Articles you saved for later', icon: <Bookmark />, color: '#4f46e5', link: '/bookmarks' },
     { title: 'Notifications', desc: 'Updates on your favorites', icon: <Notifications />, color: '#ec4899', link: '/notifications' },
