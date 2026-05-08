@@ -23,31 +23,36 @@ import {
     MenuItem,
     CircularProgress,
     Alert,
-    Stack
+    Stack,
+    Avatar,
+    useTheme,
+    Tooltip,
+    Divider,
+    Pagination
 } from '@mui/material';
 import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     PersonAdd as PersonAddIcon,
-    ArrowBack as ArrowBackIcon
+    ArrowBack as ArrowBackIcon,
+    AdminPanelSettings,
+    Shield,
+    LockReset,
+    Block,
+    CheckCircle
 } from '@mui/icons-material';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 
 const StaffManagement = () => {
-    /*
-     * user-administration-interface
-     * Central control panel for managing platform users.
-     * Capabilities:
-     * - Role Assignment: Elevating users to Publishers or Admins.
-     * - Status Control: Activating or banning user accounts.
-     * - Staff Oversight: Monitoring login activity and access levels.
-     */
     const { token } = useAuth();
+    const theme = useTheme();
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
@@ -59,13 +64,12 @@ const StaffManagement = () => {
         const fetchUsers = async () => {
             try {
                 setLoading(true);
-                // Fetch users who are staff (admin/publisher) or just all users if it's general management
                 const response = await axios.get('/api/users', {
-                    params: { limit: 100 }, // Get all for now or implement pagination
+                    params: { page: page, limit: 10 },
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                // Show all users including readers
                 setUsers(response.data.users);
+                setTotalPages(response.data.totalPages || 1);
                 setLoading(false);
             } catch (err) {
                 console.error('Error fetching staff:', err);
@@ -77,14 +81,8 @@ const StaffManagement = () => {
         if (token) {
             fetchUsers();
         }
-    }, [token]);
+    }, [token, page]);
 
-    /*
-     * role-escalation-handler
-     * Modifies the security clearance of a target user.
-     * CRITICAL: This operation grants or revokes administrative/publishing privileges.
-     * Updates are persisted to the backend and reflected immediately in the UI.
-     */
     const handleRoleChange = async () => {
         try {
             await axios.put(`/api/users/${selectedUser._id}/role`,
@@ -120,7 +118,6 @@ const StaffManagement = () => {
 
     const handleResetPassword = async (user) => {
         try {
-            // Simulated link sending until we have email service
             setSuccess(`Password reset instructions sent to ${user.email}`);
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
@@ -128,122 +125,200 @@ const StaffManagement = () => {
         }
     };
 
-    if (loading) return <Box display="flex" justifyContent="center" py={10}><CircularProgress /></Box>;
+    if (loading) {
+        return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}><CircularProgress /></Box>;
+    }
 
     return (
-        <Container maxWidth="lg" sx={{ py: 6 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6 }}>
-                <Box>
-                    <Typography variant="h4" fontWeight="900">User Management</Typography>
-                    <Typography color="text.secondary">Manage all users and their roles on the platform</Typography>
+        <Box className="mesh-gradient" sx={{ minHeight: '100vh', py: 6 }}>
+            <Container maxWidth="xl">
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 6, flexWrap: 'wrap', gap: 3 }}>
+                    <Box>
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                            <AdminPanelSettings color="primary" sx={{ fontSize: '2.5rem' }} />
+                            <Typography variant="h3" fontWeight="900" sx={{ letterSpacing: '-1.5px' }}>User Management</Typography>
+                        </Stack>
+                        <Typography color="text.secondary" variant="h6" fontWeight="500">
+                            Orchestrate platform access and security levels
+                        </Typography>
+                    </Box>
+                    <Button
+                        variant="contained"
+                        disableElevation
+                        startIcon={<PersonAddIcon />}
+                        component={Link}
+                        to="/admin/users/create"
+                        sx={{ borderRadius: '14px', px: 4, py: 1.5, fontWeight: 800, fontSize: '1rem' }}
+                    >
+                        Add System User
+                    </Button>
                 </Box>
-                <Button
-                    variant="contained"
-                    startIcon={<PersonAddIcon />}
-                    component={Link}
-                    to="/admin/users/create"
-                    sx={{ borderRadius: '12px', px: 3 }}
-                >
-                    Add User
-                </Button>
-            </Box>
 
-            {success && <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccess('')}>{success}</Alert>}
+                {success && <Alert severity="success" sx={{ mb: 4, borderRadius: 3, border: '1px solid', borderColor: 'success.light' }} onClose={() => setSuccess('')}>{success}</Alert>}
+                {error && <Alert severity="error" sx={{ mb: 4, borderRadius: 3 }}>{error}</Alert>}
 
-            <TableContainer component={Paper} sx={{ borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: 'none' }}>
-                <Table>
-                    <TableHead sx={{ bgcolor: '#f8fafc' }}>
-                        <TableRow>
-                            <TableCell sx={{ fontWeight: 700 }}>User</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }}>Last Activity</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 700 }}>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {users.map((user) => (
-                            <TableRow key={user._id} hover>
-                                <TableCell>
-                                    <Typography variant="subtitle2" fontWeight="700">{user.name}</Typography>
-                                    <Typography variant="caption" color="text.secondary">{user.email}</Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={user.role.toUpperCase()}
-                                        color={user.role === 'admin' ? 'secondary' : 'primary'}
-                                        size="small"
-                                        sx={{ fontWeight: 800, fontSize: '0.65rem' }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={user.status.toUpperCase()}
-                                        color={user.status === 'active' ? 'success' : 'default'}
-                                        variant={user.status === 'active' ? 'contained' : 'outlined'}
-                                        size="small"
-                                        sx={{ fontWeight: 800, fontSize: '0.65rem' }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="caption">{new Date(user.lastLogin).toLocaleDateString()}</Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                                        <Button size="small" variant="outlined" onClick={() => handleResetPassword(user)}>Reset Pass</Button>
-                                        <Button
-                                            size="small"
-                                            variant="outlined"
-                                            color="primary"
-                                            onClick={() => {
-                                                setSelectedUser(user);
-                                                setNewRole(user.role);
-                                                setOpenRoleDialog(true);
-                                            }}
-                                        >
-                                            Role
-                                        </Button>
-                                        <Button
-                                            size="small"
-                                            variant="contained"
-                                            color={user.status === 'active' ? 'error' : 'success'}
-                                            onClick={() => toggleStatus(user._id)}
-                                        >
-                                            {user.status === 'active' ? 'Deactivate' : 'Activate'}
-                                        </Button>
-                                    </Stack>
-                                </TableCell>
+                <TableContainer className="glass-panel" component={Paper} sx={{ borderRadius: 5, overflow: 'hidden' }}>
+                    <Table sx={{ minWidth: 900 }}>
+                        <TableHead sx={{ bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)' }}>
+                            <TableRow>
+                                <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 3 }}>IDENTITY</TableCell>
+                                <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 3 }}>SECURITY ROLE</TableCell>
+                                <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 3 }}>STATUS</TableCell>
+                                <TableCell sx={{ fontWeight: 800, color: 'text.secondary', py: 3 }}>LAST ACTIVITY</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 800, color: 'text.secondary', py: 3 }}>ADMIN ACTIONS</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {users.map((user) => (
+                                <TableRow key={user._id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                    <TableCell sx={{ py: 2.5 }}>
+                                        <Stack direction="row" spacing={2} alignItems="center">
+                                            <Avatar sx={{ 
+                                                width: 42, 
+                                                height: 42, 
+                                                bgcolor: user.role === 'admin' ? 'warning.light' : 'primary.light',
+                                                fontWeight: 800,
+                                                fontSize: '1rem',
+                                                boxShadow: 'var(--shadow-sm)'
+                                            }}>
+                                                {user.name.charAt(0)}
+                                            </Avatar>
+                                            <Box>
+                                                <Typography variant="subtitle1" fontWeight="800" sx={{ color: 'text.primary', lineHeight: 1.2 }}>{user.name}</Typography>
+                                                <Typography variant="caption" color="text.secondary" fontWeight="500">{user.email}</Typography>
+                                            </Box>
+                                        </Stack>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Chip
+                                            label={user.role.toUpperCase()}
+                                            color={user.role === 'admin' ? 'warning' : user.role === 'publisher' ? 'success' : 'primary'}
+                                            size="small"
+                                            sx={{ fontWeight: 900, fontSize: '0.65rem', letterSpacing: '0.5px', px: 1 }}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Chip
+                                            label={user.status.toUpperCase()}
+                                            icon={user.status === 'active' ? <CheckCircle sx={{ fontSize: '14px !important' }} /> : <Block sx={{ fontSize: '14px !important' }} />}
+                                            color={user.status === 'active' ? 'success' : 'default'}
+                                            variant={user.status === 'active' ? 'contained' : 'outlined'}
+                                            size="small"
+                                            sx={{ fontWeight: 800, fontSize: '0.65rem', borderRadius: '8px' }}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="body2" fontWeight="600" color="text.secondary">
+                                            {new Date(user.lastLogin || user.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Stack direction="row" spacing={1} justifyContent="flex-end">
+                                            <Tooltip title="Reset Password">
+                                                <IconButton 
+                                                    size="small" 
+                                                    onClick={() => handleResetPassword(user)}
+                                                    sx={{ border: '1px solid', borderColor: 'divider' }}
+                                                >
+                                                    <LockReset fontSize="small" />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Button
+                                                size="small"
+                                                variant="outlined"
+                                                onClick={() => {
+                                                    setSelectedUser(user);
+                                                    setNewRole(user.role);
+                                                    setOpenRoleDialog(true);
+                                                }}
+                                                sx={{ borderRadius: '8px', fontWeight: 700, px: 2 }}
+                                            >
+                                                Adjust Role
+                                            </Button>
+                                            <Button
+                                                size="small"
+                                                variant="contained"
+                                                disableElevation
+                                                color={user.status === 'active' ? 'error' : 'success'}
+                                                onClick={() => toggleStatus(user._id)}
+                                                sx={{ borderRadius: '8px', fontWeight: 800, px: 2 }}
+                                            >
+                                                {user.status === 'active' ? 'Revoke' : 'Reinstate'}
+                                            </Button>
+                                        </Stack>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
-            <Dialog open={openRoleDialog} onClose={() => setOpenRoleDialog(false)}>
-                <DialogTitle sx={{ fontWeight: 800 }}>Change Role: {selectedUser?.name}</DialogTitle>
-                <DialogContent>
-                    <Box sx={{ pt: 2, minWidth: 300 }}>
-                        <FormControl fullWidth>
-                            <InputLabel>New Role</InputLabel>
+                {/* Pagination Section */}
+                {totalPages > 1 && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                        <Pagination 
+                            count={totalPages} 
+                            page={page} 
+                            onChange={(e, v) => setPage(v)}
+                            color="primary"
+                            size="large"
+                            sx={{
+                                '& .MuiPaginationItem-root': {
+                                    className: 'glass-panel',
+                                    borderRadius: '10px',
+                                    fontWeight: 700,
+                                    '&.Mui-selected': {
+                                        bgcolor: 'primary.main',
+                                        color: 'white',
+                                        '&:hover': { bgcolor: 'primary.dark' }
+                                    }
+                                }
+                            }}
+                        />
+                    </Box>
+                )}
+
+                <Dialog 
+                    open={openRoleDialog} 
+                    onClose={() => setOpenRoleDialog(false)}
+                    PaperProps={{ className: 'glass-panel', sx: { borderRadius: 4, p: 1 } }}
+                >
+                    <DialogTitle sx={{ fontWeight: 900, fontSize: '1.5rem' }}>
+                        Elevate Security Access
+                    </DialogTitle>
+                    <DialogContent>
+                        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+                            Modifying the role for <strong>{selectedUser?.name}</strong> will immediately change their system privileges.
+                        </Typography>
+                        <FormControl fullWidth variant="outlined">
+                            <InputLabel id="role-select-label">New System Role</InputLabel>
                             <Select
+                                labelId="role-select-label"
                                 value={newRole}
-                                label="New Role"
+                                label="New System Role"
                                 onChange={(e) => setNewRole(e.target.value)}
+                                sx={{ borderRadius: '12px' }}
                             >
-                                <MenuItem value="reader">Reader</MenuItem>
-                                <MenuItem value="publisher">Publisher</MenuItem>
-                                <MenuItem value="admin">Admin</MenuItem>
-                                <MenuItem value="editor">Editor</MenuItem>
+                                <MenuItem value="reader" sx={{ fontWeight: 600 }}>Reader (Default Access)</MenuItem>
+                                <MenuItem value="publisher" sx={{ fontWeight: 600 }}>Publisher (Content Creation)</MenuItem>
+                                <MenuItem value="admin" sx={{ fontWeight: 700, color: 'error.main' }}>Administrator (Full System Control)</MenuItem>
                             </Select>
                         </FormControl>
-                    </Box>
-                </DialogContent>
-                <DialogActions sx={{ p: 3 }}>
-                    <Button onClick={() => setOpenRoleDialog(false)}>Cancel</Button>
-                    <Button onClick={handleRoleChange} variant="contained" color="primary">Update Access</Button>
-                </DialogActions>
-            </Dialog>
-        </Container>
+                    </DialogContent>
+                    <DialogActions sx={{ p: 3, pt: 0 }}>
+                        <Button onClick={() => setOpenRoleDialog(false)} sx={{ fontWeight: 700 }}>Cancel</Button>
+                        <Button 
+                            onClick={handleRoleChange} 
+                            variant="contained" 
+                            disableElevation
+                            sx={{ fontWeight: 800, px: 4, borderRadius: '10px' }}
+                        >
+                            Authorize Update
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Container>
+        </Box>
     );
 };
 

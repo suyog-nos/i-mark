@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   en: {
     translation: {
-      "welcome": "Welcome to News Portal",
+      "welcome": "Welcome to Insight World",
       "navigation": {
         "home": "Home",
         "articles": "Articles",
@@ -73,7 +73,7 @@ const resources = {
   },
   np: {
     translation: {
-      "welcome": "समाचार पोर्टलमा स्वागत छ",
+      "welcome": "इनसाइट वर्ल्डमा स्वागत छ",
       "navigation": {
         "home": "गृहपृष्ठ",
         "articles": "लेखहरू",

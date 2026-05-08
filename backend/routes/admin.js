@@ -340,7 +340,7 @@ router.get('/moderation/queue', auth, authorize('admin'), async (req, res) => {
 router.get('/settings', auth, authorize('admin'), async (req, res) => {
   try {
     const settings = {
-      siteName: 'News Portal',
+      siteName: 'Insight World',
       defaultLanguage: 'en',
       supportedLanguages: ['en', 'np'],
       allowUserRegistration: true,

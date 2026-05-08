@@ -63,6 +63,16 @@ const Publishers = () => {
    * Performs dynamic queries to the backend to retrieve publisher profiles.
    * Triggered by the search input debounce or initial component load.
    */
+  /*
+   * PUBLISHER DIRECTORY SEARCH AND SUBSCRIPTION WORKFLOW (Workflow Overview)
+   * This module provides a transparent look into the creator ecosystem of Insight World. 
+   * The workflow begins with a directory-search engine that performs dynamic queries to 
+   * find verified publishers. Once profiles are retrieved, the logic manages a sophisticated 
+   * subscription state—users can "Follow" publishers to curate their personal news feed. 
+   * This state is synchronized both with the backend for authenticated users and with 
+   * local persistence for immediate UI responsiveness. It bridges the gap between raw 
+   * content and the specific media houses or independent journalists that users trust most.
+   */
   const fetchPublishers = async () => {
     try {
       const res = await axios.get(`/api/users/publishers/list?search=${search}`);

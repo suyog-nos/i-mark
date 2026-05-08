@@ -23,6 +23,7 @@ import ScrollToTop from './components/Common/ScrollToTop';
 
 // Pages
 import Home from './pages/Home';
+import Landing from './pages/Landing/Landing';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Articles from './pages/Articles/Articles';
@@ -63,7 +64,8 @@ const AppRoutes = () => {
         * Accessible to all visitors regardless of authentication state.
         * Serves as the entry point for discovery and acquisition workflows.
        */}
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/home" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/articles" element={<Articles />} />

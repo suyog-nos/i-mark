@@ -7,8 +7,21 @@ import {
   Paper,
   CircularProgress,
   Button,
-  useTheme
+  useTheme,
+  Avatar,
+  Stack,
+  IconButton,
+  Divider
 } from '@mui/material';
+import {
+  Visibility as VisibilityIcon,
+  Description as DescriptionIcon,
+  Group as GroupIcon,
+  AssignmentLate as AssignmentLateIcon,
+  TrendingUp,
+  MoreVert as MoreVertIcon,
+  ArrowForward
+} from '@mui/icons-material';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -41,17 +54,10 @@ ChartJS.register(
 );
 
 const AdminDashboard = () => {
-  /*
-   * administrative-context
-   * Validates high-level privileges and initializes system-wide monitoring state.
-   * - stats: Aggregates metrics for users, articles, and engagement.
-   * - fail-safe: Implements default values to ensure UI stability during partial API failures.
-   */
   const { token, isAdmin, user } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  // Initialize with safe defaults to prevent "infinite loading" if fetch fails
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalArticles: 0,
@@ -65,34 +71,33 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    /*
-     * resilient-data-fetching
-     * Executes a parallel data retrieval strategy with granular error isolation.
-     * Uses a 'safeFetch' wrapper to ensure that a failure in one widget (e.g., Trends) 
-     * does not crash the entire dashboard.
-     * Aggregates distinct data streams into a unified 'stats' object for rendering.
-     */
     const fetchAnalytics = async () => {
       try {
         setLoading(true);
-
-        // Helper to safely fetch data or return default
+        /*
+         * ANALYTICAL AGGREGATION AND OVERSIGHT WORKFLOW (Workflow Overview)
+         * This controller serves as the primary intelligence hub for the entire platform. 
+         * The workflow utilizes a "Safe-Fetch" architecture, which allows the dashboard to 
+         * gracefully handle partial data failures without crashing the entire Control Center. 
+         * By orchestrating concurrent requests via Promise.all, we aggregate real-time metrics 
+         * across user distributions, content trends, and category saturation. This data is then 
+         * transformed into a structured visual state that allows system administrators to monitor 
+         * the "Content Pulse" of the application and make informed decisions on article 
+         * approvals and publisher performance.
+         */
         const safeFetch = async (url, fallback) => {
           try {
-            console.log(`Fetching ${url} with token:`, token ? 'Present' : 'Missing');
             const res = await axios.get(url, {
               headers: { Authorization: `Bearer ${token}` },
-              timeout: 10000 // 10s timeout to prevent hanging
+              timeout: 10000
             });
-            console.log(`Response from ${url}:`, res.data);
             return res.data;
           } catch (err) {
-            console.error(`Failed to fetch ${url}:`, err.response?.status, err.message);
+            console.error(`Failed to fetch ${url}:`, err.message);
             return fallback;
           }
         };
 
-        // Fetch all data in parallel
         const [dashboardData, categoriesData, mostReadData, trendsData] = await Promise.all([
           safeFetch('/api/analytics/dashboard', {
             totalUsers: 0, totalArticles: 0, pendingArticles: 0, totalViews: 0,
@@ -103,28 +108,21 @@ const AdminDashboard = () => {
           safeFetch('/api/analytics/trends', [])
         ]);
 
-        console.log('Dashboard data received:', dashboardData);
-
-        // Transform userDistribution safely
         const usersByRole = {
           readers: dashboardData.userDistribution?.find(d => d._id === 'reader')?.count || 0,
           publishers: dashboardData.userDistribution?.find(d => d._id === 'publisher')?.count || 0,
           admins: dashboardData.userDistribution?.find(d => d._id === 'admin')?.count || 0
         };
 
-        const newStats = {
+        setStats({
           ...dashboardData,
           usersByRole,
           categoryDistribution: Array.isArray(categoriesData) ? categoriesData.map(c => ({ category: c._id || 'Uncategorized', count: c.count })) : [],
           mostRead: Array.isArray(mostReadData) ? mostReadData : [],
           trends: Array.isArray(trendsData) ? trendsData : []
-        };
-
-        console.log('Setting stats to:', newStats);
-        setStats(newStats);
+        });
 
       } catch (err) {
-        console.error('Critical error in dashboard:', err);
         setError('Partial data load failure. Please refresh.');
       } finally {
         setLoading(false);
@@ -133,46 +131,56 @@ const AdminDashboard = () => {
 
     if (token) {
       fetchAnalytics();
-    } else {
-      setLoading(false);
     }
   }, [token]);
 
-  if (!user || !isAdmin) {
-    return null;
-  }
+  if (!user || !isAdmin) return null;
 
   if (error) {
     return (
       <Container sx={{ py: 10 }}>
         <Typography color="error" variant="h5" textAlign="center">{error}</Typography>
-        <Button onClick={() => window.location.reload()} sx={{ mt: 2, display: 'block', mx: 'auto' }}>Retry</Button>
+        <Button variant="contained" onClick={() => window.location.reload()} sx={{ mt: 2, display: 'block', mx: 'auto' }}>Retry</Button>
       </Container>
     );
   }
 
   if (loading) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}><CircularProgress /></Box>;
+    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}><CircularProgress size={60} thickness={4} /></Box>;
   }
 
-  // Chart Options for Theme Compatibility
   const commonOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        labels: { color: theme.palette.text.primary }
+        position: 'bottom',
+        labels: { 
+          color: theme.palette.text.secondary,
+          font: { family: 'Inter', size: 12, weight: 500 },
+          padding: 20,
+          usePointStyle: true
+        }
       },
-      title: { color: theme.palette.text.primary }
+      tooltip: {
+        backgroundColor: theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff',
+        titleColor: theme.palette.text.primary,
+        bodyColor: theme.palette.text.secondary,
+        borderColor: theme.palette.divider,
+        borderWidth: 1,
+        padding: 12,
+        boxPadding: 6,
+        usePointStyle: true
+      }
     },
     scales: {
       x: {
-        ticks: { color: theme.palette.text.secondary },
-        grid: { color: theme.palette.divider }
+        ticks: { color: theme.palette.text.secondary, font: { size: 11 } },
+        grid: { display: false }
       },
       y: {
-        ticks: { color: theme.palette.text.secondary },
-        grid: { color: theme.palette.divider }
+        ticks: { color: theme.palette.text.secondary, font: { size: 11 } },
+        grid: { color: theme.palette.divider, drawBorder: false }
       }
     }
   };
@@ -181,7 +189,8 @@ const AdminDashboard = () => {
     labels: ['Readers', 'Publishers', 'Admins'],
     datasets: [{
       data: [stats.usersByRole.readers, stats.usersByRole.publishers, stats.usersByRole.admins],
-      backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+      backgroundColor: ['#6366f1', '#10b981', '#f59e0b'],
+      hoverOffset: 15,
       borderWidth: 0,
     }]
   };
@@ -191,8 +200,10 @@ const AdminDashboard = () => {
     datasets: [{
       label: 'Articles',
       data: stats.categoryDistribution.map(d => d.count),
-      backgroundColor: 'rgba(59, 130, 246, 0.6)',
-      borderRadius: 4
+      backgroundColor: 'rgba(99, 102, 241, 0.7)',
+      hoverBackgroundColor: '#6366f1',
+      borderRadius: 6,
+      barThickness: 12
     }]
   };
 
@@ -201,150 +212,205 @@ const AdminDashboard = () => {
     datasets: [{
       label: 'New Articles',
       data: stats.trends.map(t => t.count),
-      borderColor: '#3b82f6',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      borderColor: '#6366f1',
+      backgroundColor: 'rgba(99, 102, 241, 0.1)',
       fill: true,
-      tension: 0.4
+      tension: 0.4,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#6366f1'
     }]
   };
 
-  const mostReadData = {
-    labels: stats.mostRead.map(a => a.title.length > 20 ? a.title.substring(0, 20) + '...' : a.title),
-    datasets: [{
-      label: 'Views',
-      data: stats.mostRead.map(a => a.views),
-      backgroundColor: 'rgba(16, 185, 129, 0.6)',
-      borderRadius: 4
-    }]
-  };
+  const quickStats = [
+    { label: 'Total Views', val: stats.totalViews.toLocaleString(), color: '#6366f1', icon: <VisibilityIcon />, path: null },
+    { label: 'Total Articles', val: stats.totalArticles.toLocaleString(), color: '#10b981', icon: <DescriptionIcon />, path: '/admin/articles' },
+    { label: 'System Users', val: stats.totalUsers.toLocaleString(), color: '#8b5cf6', icon: <GroupIcon />, path: '/admin/staff' },
+    { label: 'Pending Review', val: stats.pendingArticles, color: '#f43f5e', icon: <AssignmentLateIcon />, path: '/admin/articles' }
+  ];
 
   return (
-    <Container maxWidth="xl">
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight="800" gutterBottom sx={{
-          background: 'linear-gradient(45deg, #1e3a8a 30%, #3b82f6 90%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-        }}>
-          Analytics Dashboard
-        </Typography>
-        <Typography color="text.secondary" variant="subtitle1">
-          Real-time platform usage and content statistics
-        </Typography>
-      </Box>
+    <Box className="mesh-gradient" sx={{ minHeight: '100vh', py: 4 }}>
+      <Container maxWidth="xl">
+        <Box sx={{ mb: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <Box>
+            <Typography variant="h3" fontWeight="900" sx={{
+              letterSpacing: '-1.5px',
+              background: theme.palette.mode === 'dark' 
+                ? 'linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%)'
+                : 'linear-gradient(135deg, #1e293b 0%, #3b82f6 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              mb: 1
+            }}>
+              Control Center
+            </Typography>
+            <Typography color="text.secondary" variant="h6" fontWeight="500">
+              System health and engagement overview
+            </Typography>
+          </Box>
+          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Stack direction="row" spacing={2}>
+              <Button 
+                variant="outlined" 
+                startIcon={<TrendingUp />}
+                sx={{ borderRadius: '12px', borderWeight: 2 }}
+              >
+                View Full Reports
+              </Button>
+            </Stack>
+          </Box>
+        </Box>
 
-      {/* Quick Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {[
-          { label: 'Total Views', val: stats.totalViews.toLocaleString(), color: '#3b82f6', path: null },
-          { label: 'Total Articles', val: stats.totalArticles.toLocaleString(), color: '#10b981', path: '/admin/articles' },
-          { label: 'Registered Users', val: stats.totalUsers.toLocaleString(), color: '#6366f1', path: '/admin/staff' },
-          { label: 'Pending Review', val: stats.pendingArticles, color: '#ef4444', path: '/admin/articles' }
-        ].map((item, i) => (
-          <Grid item xs={12} sm={6} md={3} key={i}>
-            <Paper
-              elevation={0}
-              onClick={() => item.path && navigate(item.path)}
-              sx={{
-                p: 3,
-                borderRadius: 3,
-                bgcolor: 'background.paper',
-                border: `1px solid ${theme.palette.divider}`,
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                cursor: item.path ? 'pointer' : 'default',
-                '&:hover': {
-                  transform: item.path ? 'translateY(-4px)' : 'none',
-                  boxShadow: item.path ? '0 8px 24px rgba(0,0,0,0.12)' : 'none'
-                }
-              }}
-            >
-              <Typography variant="caption" color="text.secondary" fontWeight="700" sx={{ textTransform: 'uppercase' }}>
-                {item.label}
-              </Typography>
-              <Typography variant="h3" fontWeight="800" sx={{ color: item.color, mt: 1 }}>
-                {item.val}
-              </Typography>
+        {/* Quick Stats Grid */}
+        <Grid container spacing={3} sx={{ mb: 5 }}>
+          {quickStats.map((item, i) => (
+            <Grid item xs={12} sm={6} md={3} key={i}>
+              <Paper
+                className="glass-panel"
+                elevation={0}
+                onClick={() => item.path && navigate(item.path)}
+                sx={{
+                  p: 3,
+                  borderRadius: 4,
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  cursor: item.path ? 'pointer' : 'default',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&:hover': {
+                    transform: item.path ? 'translateY(-6px)' : 'none',
+                    boxShadow: 'var(--shadow-premium)',
+                    '& .stat-icon': {
+                      transform: 'scale(1.2) rotate(-10deg)',
+                      opacity: 0.2
+                    }
+                  }
+                }}
+              >
+                <Box className="stat-icon" sx={{ 
+                  position: 'absolute', 
+                  right: -10, 
+                  bottom: -10, 
+                  fontSize: '80px', 
+                  color: item.color, 
+                  opacity: 0.1,
+                  transition: 'all 0.3s ease'
+                }}>
+                  {item.icon}
+                </Box>
+                <Stack spacing={1}>
+                  <Typography variant="overline" color="text.secondary" fontWeight="700" sx={{ letterSpacing: '1px' }}>
+                    {item.label}
+                  </Typography>
+                  <Typography variant="h3" fontWeight="900" sx={{ color: item.color }}>
+                    {item.val}
+                  </Typography>
+                  {item.path && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: item.color }}>
+                      <Typography variant="caption" fontWeight="600">Manage</Typography>
+                      <ArrowForward sx={{ fontSize: '12px' }} />
+                    </Box>
+                  )}
+                </Stack>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+
+        <Grid container spacing={4}>
+          {/* Main Trend Chart */}
+          <Grid item xs={12} lg={8}>
+            <Paper className="glass-panel" elevation={0} sx={{ p: 4, borderRadius: 5 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                <Typography variant="h5" fontWeight="800">Content Pulse</Typography>
+                <IconButton size="small"><MoreVertIcon /></IconButton>
+              </Box>
+              <Box sx={{ height: 350 }}>
+                <Line data={userGrowthData} options={commonOptions} />
+              </Box>
             </Paper>
           </Grid>
-        ))}
-      </Grid>
 
-      <Grid container spacing={3}>
-        {/* Article Trend Chart */}
-        <Grid item xs={12} md={8}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.palette.divider}`, bgcolor: 'background.paper' }}>
-            <Typography variant="h6" fontWeight="700" sx={{ mb: 3 }}>Article Trend Over Time</Typography>
-            <Box sx={{ height: 300 }}>
-              <Line data={userGrowthData} options={commonOptions} />
-            </Box>
-          </Paper>
-        </Grid>
+          {/* User Distribution */}
+          <Grid item xs={12} lg={4}>
+            <Paper className="glass-panel" elevation={0} sx={{ p: 4, borderRadius: 5, height: '100%' }}>
+              <Typography variant="h5" fontWeight="800" sx={{ mb: 4 }}>User Ecosystem</Typography>
+              <Box sx={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+                <Doughnut
+                  data={userRoleData}
+                  options={{
+                    ...commonOptions,
+                    cutout: '75%',
+                    plugins: { ...commonOptions.plugins, legend: { position: 'bottom' } }
+                  }}
+                />
+                <Box sx={{ position: 'absolute', textAlign: 'center' }}>
+                  <Typography variant="h4" fontWeight="900">{stats.totalUsers}</Typography>
+                  <Typography variant="caption" color="text.secondary">Total Souls</Typography>
+                </Box>
+              </Box>
+              <Divider sx={{ my: 3 }} />
+              <Stack spacing={2}>
+                {['Readers', 'Publishers', 'Admins'].map((role, idx) => (
+                  <Box key={role} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: userRoleData.datasets[0].backgroundColor[idx] }} />
+                      <Typography variant="body2" fontWeight="600">{role}</Typography>
+                    </Stack>
+                    <Typography variant="body2" fontWeight="700">
+                      {role === 'Readers' ? stats.usersByRole.readers : role === 'Publishers' ? stats.usersByRole.publishers : stats.usersByRole.admins}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            </Paper>
+          </Grid>
 
-        {/* User Roles Doughnut */}
-        <Grid item xs={12} md={4}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.palette.divider}`, bgcolor: 'background.paper' }}>
-            <Typography variant="h6" fontWeight="700" sx={{ mb: 3 }}>User Distribution</Typography>
-            <Box sx={{ height: 300, display: 'flex', justifyContent: 'center' }}>
-              <Doughnut
-                data={userRoleData}
-                options={{
-                  ...commonOptions,
-                  cutout: '70%',
-                  scales: {}, // No scales for doughnut
-                  plugins: { legend: { position: 'bottom', labels: { color: theme.palette.text.primary } } }
-                }}
-              />
-            </Box>
-          </Paper>
-        </Grid>
-
-        {/* Category Distribution Chart */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.palette.divider}`, bgcolor: 'background.paper' }}>
-            <Typography variant="h6" fontWeight="700" sx={{ mb: 3 }}>Category Wise Distribution</Typography>
-            <Box sx={{ height: 300, position: 'relative' }}>
-              {stats.categoryDistribution.length > 0 ? (
+          {/* Secondary Charts */}
+          <Grid item xs={12} md={6}>
+            <Paper className="glass-panel" elevation={0} sx={{ p: 4, borderRadius: 5 }}>
+              <Typography variant="h6" fontWeight="800" sx={{ mb: 3 }}>Category Saturation</Typography>
+              <Box sx={{ height: 300 }}>
                 <Bar
                   data={categoryChartData}
                   options={{
                     ...commonOptions,
                     indexAxis: 'y',
-                    plugins: { legend: { display: false } }
+                    plugins: { ...commonOptions.plugins, legend: { display: false } }
                   }}
                 />
-              ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', flexDirection: 'column', color: 'text.disabled' }}>
-                  <Typography variant="body2">No category data yet</Typography>
-                </Box>
-              )}
-            </Box>
-          </Paper>
-        </Grid>
+              </Box>
+            </Paper>
+          </Grid>
 
-        {/* Most Read Articles Chart */}
-        <Grid item xs={12} md={6}>
-          <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.palette.divider}`, bgcolor: 'background.paper' }}>
-            <Typography variant="h6" fontWeight="700" sx={{ mb: 3 }}>Most Read Articles</Typography>
-            <Box sx={{ height: 300, position: 'relative' }}>
-              {stats.mostRead.length > 0 ? (
-                <Bar
-                  data={mostReadData}
-                  options={{
-                    ...commonOptions,
-                    indexAxis: 'y',
-                    plugins: { legend: { display: false } }
-                  }}
-                />
-              ) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', flexDirection: 'column', color: 'text.disabled' }}>
-                  <Typography variant="body2">No article views yet</Typography>
-                </Box>
-              )}
-            </Box>
-          </Paper>
+          <Grid item xs={12} md={6}>
+            <Paper className="glass-panel" elevation={0} sx={{ p: 4, borderRadius: 5 }}>
+              <Typography variant="h6" fontWeight="800" sx={{ mb: 3 }}>Top Performing Content</Typography>
+              <Stack spacing={2.5}>
+                {stats.mostRead.length > 0 ? stats.mostRead.slice(0, 5).map((article, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1, minWidth: 0 }}>
+                      <Avatar sx={{ bgcolor: 'primary.light', width: 36, height: 36, fontSize: '0.875rem', fontWeight: 800 }}>
+                        #{i + 1}
+                      </Avatar>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography variant="body2" fontWeight="700" noWrap>{article.title}</Typography>
+                        <Typography variant="caption" color="text.secondary">{article.category?.name || 'General'}</Typography>
+                      </Box>
+                    </Stack>
+                    <Typography variant="body2" fontWeight="800" color="primary.main" sx={{ ml: 2 }}>
+                      {article.views.toLocaleString()} <VisibilityIcon sx={{ fontSize: '12px', ml: 0.5 }} />
+                    </Typography>
+                  </Box>
+                )) : (
+                  <Typography variant="body2" color="text.disabled" textAlign="center" py={5}>No data available yet</Typography>
+                )}
+              </Stack>
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

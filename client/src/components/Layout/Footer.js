@@ -23,7 +23,7 @@ const Footer = () => {
     >
       <Container maxWidth="xl">
         <Typography variant="body2" align="center" color="text.secondary">
-          © 2025 News Portal. All rights reserved.
+          © 2025 Insight World. All rights reserved.
         </Typography>
       </Container>
     </Box>

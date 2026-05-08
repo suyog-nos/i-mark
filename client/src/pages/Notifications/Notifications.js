@@ -33,6 +33,17 @@ import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
 
 const Notifications = () => {
+    /*
+     * REAL-TIME EVENT SYNCHRONIZATION WORKFLOW (Workflow Overview)
+     * This module serves as the primary alert center for the platform, ensuring that users 
+     * are never disconnected from the "Pulse" of the newsroom. The workflow is built on top 
+     * of a global Notification Context that maintains a persistent connection to the server. 
+     * Whether it's a new investigative report being published or a trending discussion 
+     * on a saved story, the system dynamically categorizes these events and maps them to 
+     * semantic visual cues. This ensures a low-friction consumption experience, where the 
+     * user can rapidly prioritize their attention based on the nature and urgency of each 
+     * incoming alert.
+     */
     const {
         notifications,
         loading,

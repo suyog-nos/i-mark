@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -17,14 +17,12 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Switch,
   Tooltip,
   Badge
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   AccountCircle,
-  Language,
   Home,
   Article,
   Dashboard,
@@ -36,7 +34,7 @@ import {
   Newspaper,
   Notifications as NotificationsIcon
 } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme as useCustomTheme } from '../../contexts/ThemeContext';
 import { useNotifications } from '../../contexts/NotificationContext';
@@ -60,6 +58,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
   const { unreadCount } = useNotifications();
 
   /*
@@ -136,7 +135,7 @@ const Navbar = () => {
               display: { xs: 'none', sm: 'block' }
             }}
           >
-            NewsHub
+            Insight World
           </Typography>
           <Typography
             variant="h6"
@@ -163,17 +162,18 @@ const Navbar = () => {
             <Button
               color="inherit"
               component={Link}
-              to="/"
+              to="/home"
               startIcon={<Home sx={{ fontSize: '1.6rem !important' }} />}
               sx={{
                 fontSize: '1.15rem',
-                fontWeight: 700,
+                fontWeight: location.pathname === '/home' ? 900 : 700,
                 px: 3,
                 py: 1.25,
                 borderRadius: '12px',
                 letterSpacing: '0.4px',
+                backgroundColor: location.pathname === '/home' ? 'rgba(255,255,255,0.2)' : 'transparent',
                 '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.15)',
+                  backgroundColor: 'rgba(255,255,255,0.25)',
                   transform: 'translateY(-2px)'
                 },
                 transition: 'all 0.2s ease-in-out'
@@ -188,13 +188,14 @@ const Navbar = () => {
               startIcon={<Article sx={{ fontSize: '1.6rem !important' }} />}
               sx={{
                 fontSize: '1.15rem',
-                fontWeight: 700,
+                fontWeight: location.pathname === '/articles' ? 900 : 700,
                 px: 3,
                 py: 1.25,
                 borderRadius: '12px',
                 letterSpacing: '0.4px',
+                backgroundColor: location.pathname === '/articles' ? 'rgba(255,255,255,0.2)' : 'transparent',
                 '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.15)',
+                  backgroundColor: 'rgba(255,255,255,0.25)',
                   transform: 'translateY(-2px)'
                 },
                 transition: 'all 0.2s ease-in-out'
@@ -209,13 +210,14 @@ const Navbar = () => {
               startIcon={<People sx={{ fontSize: '1.6rem !important' }} />}
               sx={{
                 fontSize: '1.15rem',
-                fontWeight: 700,
+                fontWeight: location.pathname === '/publishers' ? 900 : 700,
                 px: 3,
                 py: 1.25,
                 borderRadius: '12px',
                 letterSpacing: '0.4px',
+                backgroundColor: location.pathname === '/publishers' ? 'rgba(255,255,255,0.2)' : 'transparent',
                 '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.15)',
+                  backgroundColor: 'rgba(255,255,255,0.25)',
                   transform: 'translateY(-2px)'
                 },
                 transition: 'all 0.2s ease-in-out'
@@ -230,13 +232,14 @@ const Navbar = () => {
               startIcon={<Category sx={{ fontSize: '1.6rem !important' }} />}
               sx={{
                 fontSize: '1.15rem',
-                fontWeight: 700,
+                fontWeight: location.pathname === '/categories' ? 900 : 700,
                 px: 3,
                 py: 1.25,
                 borderRadius: '12px',
                 letterSpacing: '0.4px',
+                backgroundColor: location.pathname === '/categories' ? 'rgba(255,255,255,0.2)' : 'transparent',
                 '&:hover': {
-                  backgroundColor: 'rgba(255,255,255,0.15)',
+                  backgroundColor: 'rgba(255,255,255,0.25)',
                   transform: 'translateY(-2px)'
                 },
                 transition: 'all 0.2s ease-in-out'
@@ -438,7 +441,7 @@ const Navbar = () => {
             <ListItem
               button
               component={Link}
-              to="/"
+              to="/home"
               onClick={() => setMobileMenuOpen(false)}
               sx={{ borderRadius: '8px', mb: 1, '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' } }}
             >

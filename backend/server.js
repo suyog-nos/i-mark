@@ -58,7 +58,7 @@ app.use(i18n.init);
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(express.static(path.join(__dirname, 'client', 'build')));
+app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
 
 app.use((req, res, next) => {
   req.io = io;
@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
 // Basic health check
 app.get('/', (req, res) => {
   res.json({
-    message: 'NewsHub API is running',
+    message: 'Insight World API is running',
     status: 'healthy',
     documentation: '/api/docs (coming soon)'
   });
@@ -121,7 +121,7 @@ app.use('/api/analytics', analyticsRoutes);
 // Serve React app in production
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
   });
 }
 

@@ -59,6 +59,17 @@ const Profile = () => {
    * - profileForm: Handles bio, contact info, and preferences.
    * - passwordForm: Handles the secure password change workflow.
    */
+  /*
+   * IDENTITY MANAGEMENT AND PREFERENCE WORKFLOW (Workflow Overview)
+   * This module provides a comprehensive suite for managing the user's digital identity on the 
+   * platform. The workflow is split into three distinct channels: first, a bio-data manager 
+   * for public-facing profiles; second, a high-security transaction channel for credential 
+   * updates; and third, a preference-tuning engine. A critical part of the system's logic 
+   * here is the "Interest Mapping"—where the user's selected news categories are stored 
+   * locally and synchronized with the discovery engine to curate the "For You" experience 
+   * found on the homepage. This ensures that the platform adapts its content delivery to the 
+   * specific intellectual interests of each individual team member or reader.
+   */
   const [profileForm, setProfileForm] = useState({
     name: '',
     bio: '',

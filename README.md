@@ -1,130 +1,165 @@
-# News Portal System (Imark Internship)
-
-A full-stack news management application built with the MERN stack (MongoDB, Express.js, React, Node.js). This project demonstrates Role-Based Access Control (RBAC), real-time data handling, and content management workflows.
-
-##  Project Overview
-
-This system is designed to manage the lifecycle of news articles from creation to publication. It features distinct interfaces for Administrators, Publishers, and Readers, ensuring secure and appropriate access to resources.
-
-##  Implemented Features
-
-### 1. Authentication & Security
-- **JWT Authentication**: Secure login system using JSON Web Tokens.
-- **Role-Based Access Control (RBAC)**: Middleware ensures tailored access for Admins, Publishers, and Readers.
-- **Secure Sessions**: Automatic token management and logout handling.
-
-### 2. User Roles
-- **Administrator**: Complete control over users and content. Can approve/reject articles via a Moderation Queue.
-- **Publisher**: dedicated dashboard to draft, edit, and submit articles. Access to performance analytics (views, status distribution).
-- **Reader**: Public access to published news with features to bookmark articles and follow publishers.
-
-### 3. Core Functionality
-- **Content Management**: Rich-text article creation with image upload support (Multer).
-- **Workflow System**: Articles transition through Draft → Pending → Published/Rejected states.
-- **Dashboard Analytics**: Visual data representation using Chart.js for publisher metrics.
-- **Localization**: Full support for English and Nepali languages using `i18next`.
-
-### 4. Real-Time Features
-- **Notifications**: Socket.IO integration alerts publishers instantly when their articles are approved or rejected.
-- **Live Status**: Real-time updates without page refreshes.
+# Insight World: Institutional Grade News Ecosystem
+## Technical Specification and Project Documentation
 
 ---
 
-##  Technology Stack
+[![MERN Stack](https://img.shields.io/badge/Stack-MERN-blue.svg)](https://mongodb.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 
-- **Frontend**: React 18, Material UI 5, Chart.js
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB (Mongoose ODM)
-- **Real-Time**: Socket.IO
-- **Utilities**: Multer (File Upload), i18next (Localization)
+**Insight World** is a high-performance news management platform engineered to replicate the operational discipline of a professional digital newsroom. Developed during an intensive internship at Imark Pvt Ltd, the system delivers a premium editorial experience through a strictly monitored content lifecycle and a sophisticated Glassmorphic interface.
 
 ---
 
-##  Setup Instructions
+## 1. Core Value Proposition
 
-### 1. Prerequisites
-- Node.js (v14 or higher)
-- MongoDB (Local instance or Atlas connection string)
+Insight World prioritizes professional integrity, transparency, and multi-lingual accessibility.
+*   **Internationalization**: Native support for English and Nepali languages with real-time translation toggles.
+*   **Editorial State Machine**: A rigid workflow (Draft -> Pending -> Published) ensures institutional quality control and content verification.
+*   **System Accountability**: Every article and modification is cryptographically tethered to a verified user identity.
 
-### 2. Installation
+---
 
-Clone the repository and install dependencies for both server and client.
+## 2. Technical Highlights
 
-```bash
-# 1. Install Backend Dependencies
-npm install
+### Security and Identity Management
+*   **Role-Based Access Control (RBAC)**: Granular permissions system for Administrators, Publishers, and Readers.
+*   **JWT Authentication**: Stateless session management using industry-standard JSON Web Tokens for scalable security.
+*   **Protected API Gateways**: Backend middleware enforces role-specific access to system resources and management tools.
 
-# 2. Install Frontend Dependencies
-cd client
-npm install
-cd ..
+### Professional User Experience
+*   **Glassmorphic Design**: A modern visual language utilizing depth, mesh gradients, and backdrop filter blurs.
+*   **Real-time Infrastructure**: Low-latency notification delivery for article approvals and audience engagement via Socket.IO.
+*   **Adaptive Environment**: Intelligent Light and Dark mode implementation with persistent user-state storage.
+
+### Intelligence and Analytics
+*   **Moderation Command Center**: Centralized oversight of the master editorial queue and staff management.
+*   **Performance Metrics**: Detailed data-driven insights for content engagement, including views, likes, and comments.
+
+---
+
+## 3. System Architecture & Documentation
+
+For a comprehensive technical deep-dive into the API registry, content lifecycle state machine, and data models, please refer to the:
+👉 **[System Architecture Blueprint (systemarchitecture.md)](./systemarchitecture.md)**
+
+### High-Level Overview
+The project follows a Decoupled Layered Architecture to ensure maintainability and modular growth.
+
+```mermaid
+graph TD
+    A[Presentation: React + MUI] -->|REST API| B[Logic: Node.js + Express]
+    B -->|Mongoose| C[Data: MongoDB]
+    B -->|Socket.IO| A
+    B -->|Files| D[Storage: Multer]
+    A -->|State| E[Context API]
+    A -->|i18n| F[Nepali/English]
 ```
 
-### 3. Environment Configuration
+---
 
-Create a `.env` file in the root directory with the following keys:
+## 4. System Directory Structure
 
+```bash
+intern_newsportal/
+├── backend/                # Server-side logic & REST API
+│   ├── config/             # Database & i18n initialization
+│   ├── middleware/         # Auth, RBAC & Multer guards
+│   ├── models/             # Mongoose Schema Definitions
+│   ├── routes/             # Modular API traffic control
+│   ├── uploads/            # Physical media repository
+│   ├── utils/              # Backend service layer (Seeders, Schedulers)
+│   ├── .env                # Environment variables
+│   └── server.js           # Application Entry Point
+├── client/                 # React Client Ecosystem (Frontend)
+│   ├── public/             # Static HTML & public assets
+│   ├── src/                # Component-based logic
+│   └── package.json        # Frontend-specific dependencies
+├── package.json            # Root orchestrator (Concurrently)
+└── README.md               # Project documentation
+```
+
+---
+
+## 5. Getting Started
+
+### Prerequisites
+*   Node.js (Version 16.x or higher)
+*   MongoDB (Local installation or Atlas cluster)
+
+### 2. First-Run Initialization
+Follow these steps strictly for the initial setup:
+
+```bash
+# 1. Install Orchestrator Dependencies (Root)
+npm install
+
+# 2. Install Backend & Frontend Dependencies
+npm run install:all
+
+# 3. Database Seeding
+# Populates the platform with initial Nepali content and system users.
+npm run seed
+```
+
+### 3. Database & Environment Configuration
+The platform requires a connection to a MongoDB instance. For local development, ensure your MongoDB service is running on the default port.
+
+**Local MongoDB URL**: `mongodb://localhost:27017/news-portal`
+
+Create a `.env` file inside the `backend/` directory with the following variables:
 ```env
+MONGODB_URI=mongodb://localhost:27017/news-portal
+JWT_SECRET=your_secure_jwt_key
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/news_portal
-JWT_SECRET=your_secure_jwt_secret
-CLIENT_URL=http://localhost:3000
-
-# Optional: Admin Seeder Defaults
-ADMIN_EMAIL=admin@imark.com
-ADMIN_PASSWORD=admin123
 ```
 
-### 4. Running the Application
+### Running the Platform
+It is recommended to use two separate terminal windows for optimal log visibility.
 
-This project uses `concurrently` to run both servers with a single command:
+#### Option A: Two Terminals (Recommended)
+*   **Terminal 1 (Backend)**:
+    ```bash
+    npm run backend
+    ```
+*   **Terminal 2 (Frontend)**:
+    ```bash
+    npm run frontend
+    ```
 
-```bash
-npm run dev:full
-```
-
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5000
+#### Option B: Combined Mode (Single Terminal)
+*   **One Terminal**:
+    ```bash
+    npm run dev
+    ```
 
 ---
 
-## Project Structure
+## 6. Seeded Access Credentials
+The following system accounts are available following the execution of the seeding script:
 
-- `/client`: React frontend application source.
-- `/config`: Backend configuration (i18n, DB).
-- `/middleware`: Custom middleware for Auth (JWT) and File Uploads.
-- `/models`: Database schemas (User, Article, Notification).
-- `/routes`: API endpoints and controller logic.
-- `/utils`: Helper scripts for validation and seeding.
-- `/uploads`: Storage for uploaded article images.
+| Role | Email | Password | Identity |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin@imark.com` | `password123` | Arun Subedi (System Oversight) |
+| **Publisher** | `bimal@imark.com` | `password123` | Bimal Adhikari (Senior Editor) |
+| **Publisher** | `pratima@imark.com` | `password123` | Pratima Pandey (Tech Correspondent) |
+| **Reader** | `sushila@example.com` | `password123` | General Public Member |
+| **Reader** | `dipesh@example.com` | `password123` | General Public Member |
 
-##  System Management & Troubleshooting
+---
 
-### Stopping the Application
-To stop the server, press `Ctrl + C` in your terminal.
+## 7. API Testing (Postman)
+A pre-configured Postman collection is included in the root directory to facilitate rapid API testing and development.
 
-### Killing Locked Ports (If Server Won't Start)
-If you see `EADDRINUSE` errors (Port 3000/5000 already in use), run these commands to force-kill the processes:
+*   **File**: `Insight_World_API.postman_collection.json`
+*   **How to Use**:
+    1.  Open Postman and click **Import**.
+    2.  Drag and drop the `.json` collection file.
+    3.  The collection includes a `baseUrl` variable set to `http://localhost:5000/api`.
+    4.  **Auto-Auth**: The `Login` request is configured with a test script that automatically saves the JWT token to the collection variables, so you don't have to manually copy-paste tokens for protected routes.
 
-**Windows:**
-```bash
-npx kill-port 5000 3000
-# OR
-taskkill /F /IM node.exe
-```
+---
 
-**Mac/Linux:**
-```bash
-npx kill-port 5000 3000
-# OR
-lsof -ti:5000,3000 | xargs kill -9
-```
-
-### Full Restart
-If the application behaves unexpectedly:
-1. Stop the terminal (`Ctrl + C`).
-2. Run `npx kill-port 5000 3000` to clear ports.
-3. Content `npm run dev:full` to restart.
-
-##  License
-Academic Project - Imark Internship Program.
+## 7. License and Attribution
+Academic Project - Imark Internship Program (CDL Module).
+Developed by the Imark Team under professional institutional supervision.

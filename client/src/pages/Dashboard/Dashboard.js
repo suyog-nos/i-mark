@@ -39,6 +39,16 @@ const Dashboard = () => {
    * - Feature Flags: Dynamically selects the appropriate toolset (Admin vs Publisher vs Reader).
    * - Layout Strategy: Uses configuration arrays to drive the rendering of feature cards.
    */
+  /*
+   * ROLE-BASED OPERATIONAL WORKSPACE (Workflow Overview)
+   * This module functions as the central nervous system for every authenticated user on the 
+   * platform. The workflow is driven by a dynamic "Role Registry" that inspects the user's 
+   * security clearance at the moment of mount. Depending on whether the user is a Reader, 
+   * a Publisher, or an Admin, the system reconstructs the entire UI toolset—swapping out 
+   * casual consumption tools for high-level moderation panels or creative content studios. 
+   * It ensures that every team member has a streamlined, focused interface that prioritizes 
+   * the specific actions relevant to their institutional role without unnecessary clutter.
+   */
   const { user, isAdmin, isPublisher } = useAuth();
   const { t } = useTranslation();
 

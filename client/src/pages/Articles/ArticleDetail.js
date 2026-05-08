@@ -29,6 +29,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBookmarks } from '../../contexts/BookmarkContext';
 import axios from 'axios';
+import ImageComponent from '../../components/Common/ImageComponent';
 
 const ArticleDetail = () => {
   /*
@@ -54,6 +55,17 @@ const ArticleDetail = () => {
     fetchArticle();
   }, [id, user]);
 
+  /*
+   * CONTENT HYDRATION AND ENGAGEMENT WORKFLOW (Workflow Overview)
+   * This module serves as the primary consumption interface for the Insight World platform. 
+   * The workflow begins by extracting the unique resource ID from the URL and initiating a 
+   * deep-fetch request to the backend. Beyond just rendering text, this logic orchestrates 
+   * the "Soft Paywall"—a strategic mechanism that detects the user's authentication state to 
+   * either show the full content or a truncated, masked preview. It also tracks real-time 
+   * engagement metrics like likes, shares, and bookmarks, ensuring that the reader's 
+   * interaction with the story is instantly synchronized with their personal profile and 
+   * the global analytics dashboard.
+   */
   const handleBookmark = async () => {
     if (!article) return;
     await toggleBookmark(article);
@@ -121,13 +133,7 @@ const ArticleDetail = () => {
     }
   };
 
-  const getImageUrl = (path) => {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
-    // Handle both forward and backslashes, and ensure single leading slash
-    const cleanPath = path.replace(/\\/g, '/');
-    return cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
-  };
+
 
   if (loading) {
     return (
@@ -171,7 +177,7 @@ const ArticleDetail = () => {
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, mb: 4, flexWrap: 'wrap' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Avatar
-                src={getImageUrl(article?.author?.profile?.picture)}
+              src={article?.author?.profile?.picture}
                 sx={{ width: 40, height: 40, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
               />
               <Typography variant="subtitle1" fontWeight="600">{article?.author?.name || 'Anonymous Author'}</Typography>
@@ -206,19 +212,13 @@ const ArticleDetail = () => {
         </Box>
 
         {/* Featured Image */}
-        {article?.featuredImage && (
           <Box sx={{ mb: 6, borderRadius: '32px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
-            <img
-              src={getImageUrl(article.featuredImage)}
+            <ImageComponent
+              src={article.featuredImage}
               alt={article.title}
-              style={{
-                width: '100%',
-                maxHeight: '600px',
-                objectFit: 'cover'
-              }}
+              height={600}
             />
           </Box>
-        )}
 
         <Grid container spacing={4}>
           <Grid item xs={12} md={8}>
@@ -356,7 +356,7 @@ const ArticleDetail = () => {
               <Typography variant="h6" fontWeight="700" gutterBottom>About the Author</Typography>
               <Box sx={{ textAlign: 'center', my: 3 }}>
                 <Avatar
-                  src={getImageUrl(article?.author?.profile?.picture)}
+                  src={article?.author?.profile?.picture}
                   sx={{ width: 80, height: 80, mx: 'auto', mb: 2 }}
                 />
                 <Typography variant="h6">{article?.author?.name || 'Anonymous'}</Typography>

@@ -357,7 +357,17 @@ const Articles = () => {
                     <Chip key={tag} label={`#${tag}`} size="small" variant="outlined" sx={{ borderRadius: '6px' }} />
                   ))}
                 </Box>
-                <Typography gutterBottom variant="h5" component="h3" fontWeight="800">
+                <Typography 
+                  gutterBottom 
+                  variant="h5" 
+                  component="h3" 
+                  sx={{ 
+                    fontWeight: 900, 
+                    lineHeight: 1.3,
+                    mb: 2,
+                    textTransform: 'capitalize'
+                  }}
+                >
                   {article.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" paragraph sx={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>

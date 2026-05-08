@@ -45,6 +45,7 @@ import { useTheme } from '@mui/material/styles';
 import { useTheme as useCustomTheme } from '../contexts/ThemeContext';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import ImageComponent from '../components/Common/ImageComponent';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -80,10 +81,14 @@ const Home = () => {
 
   useEffect(() => {
     /*
-     * data-aggregation-pipeline
-     * Executes concurrent API requests to hydrate the page with initial content.
-     * Uses Promise.all to minimize network waterfall effects, ensuring all critical data (articles, categories, publishers) arrives simultaneously.
-     * Filters are applied server-side via query parameters.
+     * THE DATA AGGREGATION PIPELINE (Workflow Overview)
+     * This effect acts as the primary heartbeat of the homepage. Instead of loading each section 
+     * one-by-one and causing a "choppy" user experience, we use a Promise.all pattern to fetch 
+     * articles, categories, and trending publishers simultaneously. This minimizes network lag 
+     * and ensures that the glassmorphic layout renders all its components in a single, fluid 
+     * motion. We also handle the localized state for search and filtering here, meaning that 
+     * every time the user types a query or selects a category, this pipeline re-executes to 
+     * refresh the universe of news.
      */
     const fetchData = async () => {
       try {
@@ -395,21 +400,46 @@ const Home = () => {
                     }
                   }}
                 >
-                  <CardMedia
-                    component="img"
-                    sx={{ width: { xs: '100%', sm: 240 }, height: { xs: 200, sm: 'auto' } }}
-                    image={getImageUrl(article.featuredImage)}
+                  <ImageComponent
+                    src={article.featuredImage}
                     alt={article.title}
+                    height={200}
+                    sx={{ width: { xs: '100%', sm: 240 } }}
                   />
                   <CardContent sx={{ flex: 1, p: 4 }}>
-                    <Chip label={article.category} size="small" color="primary" sx={{ mb: 2, fontWeight: 700 }} />
-                    <Typography variant="h5" fontWeight="800" sx={{ mb: 1 }}>{article.title}</Typography>
+                    <Chip 
+                      label={article.category} 
+                      size="small" 
+                      color="primary" 
+                      sx={{ 
+                        mb: 2, 
+                        fontWeight: 900, 
+                        textTransform: 'uppercase', 
+                        letterSpacing: '1px',
+                        fontSize: '0.7rem'
+                      }} 
+                    />
+                    <Typography 
+                      variant="h4" 
+                      sx={{ 
+                        fontWeight: 900, 
+                        mb: 1.5, 
+                        lineHeight: 1.2,
+                        color: 'text.primary',
+                        textTransform: 'capitalize' // Ensures titles look professional
+                      }}
+                    >
+                      {article.title}
+                    </Typography>
                     <Typography
+                      variant="body1"
                       color="text.secondary"
                       sx={{
-                        mb: 2,
+                        mb: 3,
+                        lineHeight: 1.7,
+                        fontSize: '1.05rem',
                         display: '-webkit-box',
-                        WebkitLineClamp: 2,
+                        WebkitLineClamp: 3, // Show a bit more of the story
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden'
                       }}

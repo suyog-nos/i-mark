@@ -78,6 +78,28 @@ footer {
   --spacing-2xl: 48px;
   --spacing-3xl: 64px;
 
+  /* Premium Colors & Gradients - High Contrast */
+  --primary-gradient: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+  --secondary-gradient: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+  --accent-gradient: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
+  
+  /* Text Contrast Tokens */
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-main-dark: #f8fafc;
+  --text-muted-dark: #94a3b8;
+
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-bg-dark: rgba(15, 23, 42, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-border-dark: rgba(255, 255, 255, 0.15);
+
+  /* Elevation Systems - Sharper Contrast */
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.15);
+  --shadow-lg: 0 12px 24px -4px rgb(0 0 0 / 0.2);
+  --shadow-premium: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
   /* Container max widths */
   --container-sm: 640px;
   --container-md: 768px;
@@ -92,6 +114,39 @@ footer {
 
   /* Section spacing */
   --section-gap: 40px;
+}
+
+/* ============================================
+   GLASSMORPHISM UTILITIES
+   ============================================ */
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lg);
+}
+
+.dark .glass-panel {
+  background: var(--glass-bg-dark);
+  border: 1px solid var(--glass-border-dark);
+}
+
+.mesh-gradient {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(217, 91%, 60%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(217, 91%, 60%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(217, 91%, 60%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(217, 91%, 60%, 0.1) 0px, transparent 50%);
+}
+
+.dark .mesh-gradient {
+  background-color: #0f172a;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(217, 91%, 60%, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(217, 91%, 60%, 0.05) 0px, transparent 50%);
 }
 
 /* ============================================

@@ -27,6 +27,7 @@ import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBookmarks } from '../../contexts/BookmarkContext';
 import { useTranslation } from 'react-i18next';
+import ImageComponent from '../../components/Common/ImageComponent';
 
 const Bookmarks = () => {
     /*
@@ -34,6 +35,17 @@ const Bookmarks = () => {
      * A dedicated interface for managing the user's personal reading list.
      * subscribes to the global BookmarkContext to receive real-time updates 
      * when items are added or removed from other parts of the application.
+     */
+    /*
+     * PERSONAL ARCHIVAL AND SYNCHRONIZATION WORKFLOW (Workflow Overview)
+     * This module serves as the primary gateway for the user's curated reading list. 
+     * The workflow revolves around a "Live Subscription" model where the page connects 
+     * directly to the global Bookmark Context. This architectural decision ensures that 
+     * as users discover and save articles elsewhere in the "Discovery Universe," their 
+     * personal archive is instantly updated without requiring a page refresh. It also 
+     * handles the complex state transitions between guest-mode (using local persistence) 
+     * and authenticated-mode (using server-side storage), ensuring that the user's 
+     * intellectual repository remains intact across every session.
      */
     const { t } = useTranslation();
     const { bookmarks, loading, toggleBookmark } = useBookmarks();
@@ -115,11 +127,10 @@ const Bookmarks = () => {
                                     '&:hover': { transform: 'translateY(-8px)', boxShadow: '0 12px 30px rgba(0,0,0,0.1)' }
                                 }}
                             >
-                                <CardMedia
-                                    component="img"
-                                    height="200"
-                                    image={`/uploads/${article.featuredImage?.split('/').pop() || 'placeholder.jpg'}`}
+                                <ImageComponent
+                                    src={article.featuredImage}
                                     alt={article.title}
+                                    height={200}
                                 />
                                 <CardContent sx={{ flexGrow: 1 }}>
                                     <Stack direction="row" spacing={1} sx={{ mb: 2 }}>

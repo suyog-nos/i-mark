@@ -61,6 +61,16 @@ const Login = () => {
    * 2. Invokes the auth context provider to perform the API handshake.
    * 3. Handles success (redirection) or failure (error display) outcomes.
    */
+  /*
+   * AUTHENTICATION HANDSHAKE AND SESSION CONTROL (Workflow Overview)
+   * This module acts as the secure gateway to the Insight World ecosystem. The workflow 
+   * is designed to handle sensitive credential exchange with maximum efficiency and feedback. 
+   * When a user submits their details, the system triggers a multi-stage handshake: first, 
+   * it initiates a loading lock to prevent duplicate requests; then, it dispatches the data 
+   * to our backend for JWT validation. Upon a successful match, the resulting session token 
+   * is securely stored in local persistence, and the user is seamlessly transitioned into 
+   * their respective dashboard (Reader, Publisher, or Admin) based on their verified role.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

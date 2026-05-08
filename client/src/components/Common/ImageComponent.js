@@ -6,18 +6,20 @@ const ImageComponent = ({ src, alt, height = 200, sx = {} }) => {
     const [error, setError] = useState(false);
 
     // Helper to construct the correct URL
+    const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop';
+
     const getImageUrl = (path) => {
-        if (!path) return '';
+        if (!path) return FALLBACK_IMAGE;
         if (path.startsWith('http')) return path;
 
-        // Clean up windows paths
+        // Clean up windows paths and construct backend URL
         const cleanPath = path.replace(/\\/g, '/').split('/').pop();
         return `http://localhost:5000/uploads/${cleanPath}`;
     };
 
     const imageUrl = getImageUrl(src);
 
-    if (error || !src) {
+    if (error) {
         return (
             <Box
                 sx={{
