@@ -23,9 +23,10 @@ const startScheduler = (io) => {
                     article.createdAt = now; // Update the published date to now
                     await article.save();
 
-                    // Emit socket event for real-time update
+                    // Emit socket events for real-time update
                     if (io) {
                         io.emit('article_published', article);
+                        io.emit('analytics_update', { type: 'SCHEDULED_ARTICLE_PUBLISHED', articleId: article._id });
                     }
 
                     // Notify subscribers

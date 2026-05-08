@@ -69,6 +69,8 @@ router.put('/articles/:id/approve', auth, authorize('admin'), async (req, res) =
       req.io.to(`user_${article.author._id}`).emit('notification', notification);
       // Broadcast to all users (feed update)
       req.io.emit('article_published', article);
+      // Notify admin dashboard to refresh analytics
+      req.io.emit('analytics_update', { type: 'ARTICLE_PUBLISHED', articleId: article._id });
     }
 
     // Trigger email notification (don't await to avoid blocking)
@@ -116,6 +118,7 @@ router.put('/articles/:id/reject', auth, authorize('admin'), async (req, res) =>
 
     if (req.io) {
       req.io.to(`user_${article.author._id}`).emit('notification', notification);
+      req.io.emit('analytics_update', { type: 'ARTICLE_REJECTED', articleId: article._id });
     }
 
     // Trigger email notification
@@ -144,6 +147,10 @@ router.put('/articles/:id/unpublish', auth, authorize('admin'), async (req, res)
 
     if (!article) {
       return res.status(404).json({ error: 'Article not found' });
+    }
+
+    if (req.io) {
+      req.io.emit('analytics_update', { type: 'ARTICLE_UNPUBLISHED', articleId: article._id });
     }
 
     res.json({
@@ -294,6 +301,10 @@ router.post('/articles/bulk', auth, authorize('admin'), async (req, res) => {
         break;
       default:
         return res.status(400).json({ error: 'Invalid bulk action' });
+    }
+
+    if (req.io) {
+      req.io.emit('analytics_update', { type: 'BULK_ACTION', action, count: result.modifiedCount || result.deletedCount });
     }
 
     res.json({
