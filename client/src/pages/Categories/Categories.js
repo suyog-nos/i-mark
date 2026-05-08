@@ -36,7 +36,6 @@ import {
   Newspaper
 } from '@mui/icons-material';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useTheme as useCustomTheme } from '../../contexts/ThemeContext';
 import axios from 'axios';
 import ImageComponent from '../../components/Common/ImageComponent';

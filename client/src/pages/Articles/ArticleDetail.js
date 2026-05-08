@@ -38,7 +38,6 @@ const ArticleDetail = () => {
    * Initializes access control hooks to determine if the user has read/write permissions.
    */
   const { id } = useParams();
-  const navigate = useNavigate();
   const { isAuthenticated, user, isAdmin, isPublisher } = useAuth();
   const { toggleBookmark, isBookmarked: checkBookmarked } = useBookmarks();
   const [article, setArticle] = useState(null);
