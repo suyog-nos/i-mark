@@ -6,11 +6,9 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   Box,
   Chip,
   TextField,
-  InputAdornment,
   IconButton,
   Paper,
   Avatar,
@@ -23,35 +21,23 @@ import {
 import {
   Search,
   TrendingUp,
-  Schedule,
-  Visibility,
   Bookmark,
   BookmarkBorder,
-  Share,
   ArrowForward,
-  Newspaper,
-  Category,
-  People,
-  Notifications,
-  Star,
   LocalFireDepartment,
-  AdminPanelSettings,
-  AddCircle,
   AutoAwesome
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@mui/material/styles';
-import { useTheme as useCustomTheme } from '../contexts/ThemeContext';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme as useCustomTheme } from '../contexts/ThemeContext';
+import { useSocket } from '../contexts/SocketContext';
 import ImageComponent from '../components/Common/ImageComponent';
 
 const Home = () => {
-  const { t } = useTranslation();
   const { darkMode } = useCustomTheme();
-  const { isAdmin, isPublisher, token, isAuthenticated, user } = useAuth();
-  const theme = useTheme();
+  const { isAuthenticated } = useAuth();
+  const socket = useSocket();
 
   /*
    * state-management-initialization
@@ -123,6 +109,30 @@ const Home = () => {
     const saved = JSON.parse(localStorage.getItem('bookmarkedArticles') || '[]');
     setBookmarkedIds(saved.map(a => a._id));
   }, [activeCategory, searchQuery, searchFilter]);
+
+  /*
+   * real-time-feed-synchronizer
+   * Connects the homepage to the global publication stream.
+   * Listens for 'article_published' events and dynamically injects new content 
+   * into the feed if it matches the current category filter.
+   */
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewArticle = (newArticle) => {
+      // If we are on "All" or the category matches
+      if (activeCategory === 'All' || newArticle.category === activeCategory) {
+        setArticles(prev => {
+          // Avoid duplicates
+          if (prev.find(a => a._id === newArticle._id)) return prev;
+          return [newArticle, ...prev];
+        });
+      }
+    };
+
+    socket.on('article_published', handleNewArticle);
+    return () => socket.off('article_published', handleNewArticle);
+  }, [socket, activeCategory]);
 
   // ... (rest of the component)
 

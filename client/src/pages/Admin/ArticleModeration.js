@@ -22,7 +22,6 @@ import {
     Alert,
     CircularProgress,
     Stack,
-    Divider,
     useTheme,
     Avatar,
     Pagination
@@ -32,21 +31,17 @@ import {
     Close as CloseIcon,
     Article as ArticleIcon,
     Visibility as VisibilityIcon,
-    ArrowBack as ArrowBackIcon,
     Shield as ShieldIcon,
     Warning as WarningIcon,
-    Error as ErrorIcon,
-    MoreVert as MoreVertIcon
+    VisibilityOff as VisibilityOffIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
+
 
 const ArticleModeration = () => {
     const { token } = useAuth();
     const theme = useTheme();
-    const navigate = useNavigate();
     const [filter, setFilter] = useState('pending');
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -95,6 +90,7 @@ const ArticleModeration = () => {
             if (newStatus === 'published') endpoint = 'approve';
             else if (newStatus === 'rejected') endpoint = 'reject';
             else if (newStatus === 'flagged') endpoint = 'flag';
+            else if (newStatus === 'draft') endpoint = 'unpublish';
             else return;
 
             const response = await axios.put(`/api/admin/articles/${id}/${endpoint}`,
@@ -225,6 +221,13 @@ const ArticleModeration = () => {
                                                         </IconButton>
                                                     </Tooltip>
                                                 </>
+                                            )}
+                                            {article.status === 'published' && (
+                                                <Tooltip title="Unpublish (Move to Draft)">
+                                                    <IconButton size="small" color="warning" onClick={() => handleAction(article._id, 'draft')} sx={{ border: '1px solid', borderColor: 'warning.light' }}>
+                                                        <VisibilityOffIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Tooltip>
                                             )}
                                         </Stack>
                                     </TableCell>
