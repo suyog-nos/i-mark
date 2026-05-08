@@ -13,7 +13,7 @@ const fileFilter = (req, file, cb) => {
     if (mimetype && extname) {
         return cb(null, true);
     } else {
-        const err = new Error('Invalid file type. Only jpg, jpeg, png, webp are allowed.');
+        const err = new Error(`Unsupported media format: ${path.extname(file.originalname)}. Only .jpg, .jpeg, .png, and .webp are supported.`);
         err.code = 'INVALID_FILE_TYPE';
         return cb(err);
     }
@@ -46,7 +46,7 @@ const upload = multer({
 const handleUploadError = (err, res) => {
     if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
-            return res.status(400).json({ error: 'File too large. Maximum size is 5MB.' });
+            return res.status(400).json({ error: 'The uploaded file is too large. The maximum allowed size is 5MB.' });
         }
         if (err.code === 'LIMIT_FILE_COUNT') {
             return res.status(400).json({ error: 'Too many files uploaded.' });

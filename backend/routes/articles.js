@@ -155,6 +155,13 @@ router.post('/', auth, authorize('publisher', 'admin'), uploadFields([
 
     await article.populate('author', 'name profile.picture');
 
+    // Real-time: Notify admin dashboard to refresh analytics
+    req.io.emit('analytics_update', {
+      type: 'ARTICLE_CREATED',
+      articleId: article._id,
+      status: article.status
+    });
+
     res.status(201).json({
       message: 'Article created successfully',
       article
@@ -230,6 +237,13 @@ router.put('/:id', auth, uploadFields([
     await article.save();
     await article.populate('author', 'name profile.picture');
 
+    // Real-time: Notify admin dashboard to refresh analytics
+    req.io.emit('analytics_update', {
+      type: 'ARTICLE_UPDATED',
+      articleId: article._id,
+      status: article.status
+    });
+
     res.json({
       message: 'Article updated successfully',
       article
@@ -254,6 +268,12 @@ router.delete('/:id', auth, async (req, res) => {
     }
 
     await Article.findByIdAndDelete(req.params.id);
+
+    // Real-time: Notify admin dashboard to refresh analytics
+    req.io.emit('analytics_update', {
+      type: 'ARTICLE_DELETED',
+      articleId: req.params.id
+    });
 
     res.json({ message: 'Article deleted successfully' });
   } catch (error) {

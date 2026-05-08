@@ -78,6 +78,30 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [token]);
 
+  /*
+   * proactive-session-monitor
+   * Periodically verifies the token's remaining lifespan.
+   * This ensures that if a user leaves the dashboard open, they are automatically 
+   * redirected to the login page immediately upon expiry, rather than waiting 
+   * for their next manual action.
+   */
+  useEffect(() => {
+    if (!token) return;
+
+    const intervalId = setInterval(() => {
+      if (isTokenExpired(token)) {
+        console.log('Session expired, auto-logging out...');
+        logout();
+        // Force redirect to login if not already there
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login?expired=true';
+        }
+      }
+    }, 5000); // Check every 5 seconds
+
+    return () => clearInterval(intervalId);
+  }, [token]);
+
   const login = async (email, password) => {
     try {
       const response = await axios.post('/api/auth/login', { email, password });

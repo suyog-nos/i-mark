@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Paper,
@@ -11,13 +11,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Input,
   CircularProgress,
   Grid
 } from '@mui/material';
 import { Preview, Save, Cancel } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -28,7 +26,6 @@ const EditArticle = () => {
    * - Retrieves the article ID from the route.
    * - Prepares local state containers for form data and media assets.
    */
-  const { t } = useTranslation();
   const { id } = useParams();
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -49,7 +46,7 @@ const EditArticle = () => {
 
   useEffect(() => {
     fetchArticle();
-  }, [id]);
+  }, [fetchArticle]);
 
   /*
    * data-synchronization
@@ -57,7 +54,7 @@ const EditArticle = () => {
    * Populates the form fields to allow for "Modify-in-Place" editing.
    * Handles the resolution of remote image paths to local preview URLs.
    */
-  const fetchArticle = async () => {
+  const fetchArticle = useCallback(async () => {
     try {
       const res = await axios.get(`/api/articles/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -78,7 +75,7 @@ const EditArticle = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, token]);
 
   const handleChange = (e) => {
     setFormData({

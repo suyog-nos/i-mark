@@ -52,6 +52,25 @@ const CreateArticle = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Client-side validation for instant feedback
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!allowedTypes.includes(file.type)) {
+        setError(`Unsupported media format: ${file.name.split('.').pop()}. Only JPG, PNG, and WEBP are supported.`);
+        e.target.value = ''; // Reset input
+        setFeaturedImage(null);
+        return;
+      }
+
+      if (file.size > maxSize) {
+        setError(`The file "${file.name}" is too large. Maximum allowed size is 5MB.`);
+        e.target.value = ''; // Reset input
+        setFeaturedImage(null);
+        return;
+      }
+
+      setError(''); // Clear any previous errors
       setFeaturedImage(file);
     }
   };

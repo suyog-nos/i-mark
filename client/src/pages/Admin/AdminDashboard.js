@@ -38,6 +38,7 @@ import {
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSocket } from '../../contexts/SocketContext';
 import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(
@@ -57,6 +58,7 @@ const AdminDashboard = () => {
   const { token, isAdmin, user } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
+  const socket = useSocket();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -133,6 +135,68 @@ const AdminDashboard = () => {
       fetchAnalytics();
     }
   }, [token]);
+
+  /*
+   * real-time-synchronization-monitor
+   * Listens for system-wide 'analytics_update' events broadcast via Socket.IO.
+   * When an article is created, modified, or deleted elsewhere in the system, 
+   * this effect triggers a non-disruptive background refresh of the dashboard metrics.
+   * This ensures the Control Center remains a "Live" view of the platform state.
+   */
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleUpdate = (data) => {
+      console.log('Real-time analytics update received:', data.type);
+      // Trigger a silent refresh of the analytics data
+      const refreshAnalytics = async () => {
+        try {
+          const safeFetch = async (url, fallback) => {
+            try {
+              const res = await axios.get(url, {
+                headers: { Authorization: `Bearer ${token}` },
+                timeout: 10000
+              });
+              return res.data;
+            } catch (err) {
+              return fallback;
+            }
+          };
+
+          const [dashboardData, categoriesData, mostReadData, trendsData] = await Promise.all([
+            safeFetch('/api/analytics/dashboard', stats),
+            safeFetch('/api/analytics/categories', stats.categoryDistribution),
+            safeFetch('/api/analytics/most-read', stats.mostRead),
+            safeFetch('/api/analytics/trends', stats.trends)
+          ]);
+
+          const usersByRole = {
+            readers: dashboardData.userDistribution?.find(d => d._id === 'reader')?.count || 0,
+            publishers: dashboardData.userDistribution?.find(d => d._id === 'publisher')?.count || 0,
+            admins: dashboardData.userDistribution?.find(d => d._id === 'admin')?.count || 0
+          };
+
+          setStats({
+            ...dashboardData,
+            usersByRole,
+            categoryDistribution: Array.isArray(categoriesData) ? categoriesData.map(c => ({ category: c._id || 'Uncategorized', count: c.count })) : [],
+            mostRead: Array.isArray(mostReadData) ? mostReadData : [],
+            trends: Array.isArray(trendsData) ? trendsData : []
+          });
+        } catch (err) {
+          console.error('Real-time refresh failed:', err);
+        }
+      };
+
+      refreshAnalytics();
+    };
+
+    socket.on('analytics_update', handleUpdate);
+
+    return () => {
+      socket.off('analytics_update', handleUpdate);
+    };
+  }, [socket, token, stats]);
 
   if (!user || !isAdmin) return null;
 

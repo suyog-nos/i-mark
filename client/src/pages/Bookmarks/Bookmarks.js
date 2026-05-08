@@ -6,7 +6,6 @@ import {
     Grid,
     Card,
     CardContent,
-    CardMedia,
     Button,
     IconButton,
     Chip,
@@ -18,15 +17,11 @@ import {
 import {
     Bookmark,
     BookmarkRemove,
-    Visibility,
-    Schedule,
-    Newspaper
+    Visibility
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../../contexts/AuthContext';
 import { useBookmarks } from '../../contexts/BookmarkContext';
-import { useTranslation } from 'react-i18next';
 import ImageComponent from '../../components/Common/ImageComponent';
 
 const Bookmarks = () => {
@@ -47,7 +42,7 @@ const Bookmarks = () => {
      * and authenticated-mode (using server-side storage), ensuring that the user's 
      * intellectual repository remains intact across every session.
      */
-    const { t } = useTranslation();
+
     const { bookmarks, loading, toggleBookmark } = useBookmarks();
 
     const handleRemoveBookmark = (article) => {

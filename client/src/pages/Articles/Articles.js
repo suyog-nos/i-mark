@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Grid,
@@ -17,12 +17,9 @@ import {
   Pagination
 } from '@mui/material';
 import {
-  Schedule,
-  Visibility,
   Favorite,
   CalendarToday,
-  RemoveRedEye,
-  FavoriteBorder
+  RemoveRedEye
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -50,37 +47,16 @@ const Articles = () => {
    */
   const socket = useSocket();
 
-  useEffect(() => {
-    fetchArticles();
-    fetchCategories();
-
-    // Listen for real-time article publication
-    if (socket) {
-      socket.on('article_published', () => {
-        fetchArticles();
-      });
-
-      return () => socket.off('article_published');
-    }
-  }, [search, category, sortBy, page, socket]);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get('/api/articles/categories/list');
       setCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
-  };
+  }, []);
 
-  /*
-   * query-builder-engine
-   * Constructs complex filter queries for the backend.
-   * - Pagination: Manages offset/limit.
-   * - Sorting: Handles declarative sort keys (createdAt, views, likes).
-   * - Filtering: Appends optional search text and category filters only if active.
-   */
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -101,7 +77,20 @@ const Articles = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, sortBy, search, category]);
+
+  useEffect(() => {
+    fetchArticles();
+    fetchCategories();
+
+    if (socket) {
+      socket.on('article_published', () => {
+        fetchArticles();
+      });
+
+      return () => socket.off('article_published');
+    }
+  }, [fetchArticles, fetchCategories, socket]);
 
   /*
    * interaction-handlers

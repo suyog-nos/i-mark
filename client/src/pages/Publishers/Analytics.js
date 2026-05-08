@@ -7,20 +7,15 @@ import {
     Card,
     CardContent,
     Paper,
-    CircularProgress,
-    Stack,
-    Divider,
-    LinearProgress
+    CircularProgress
 } from '@mui/material';
 import {
     TrendingUp,
     Visibility,
     Favorite,
     Share,
-    Comment,
     Article,
-    Assessment,
-    Timeline
+    Assessment
 } from '@mui/icons-material';
 import {
     Chart as ChartJS,
@@ -115,7 +110,7 @@ const PublisherAnalytics = () => {
         if (token) {
             fetchAnalytics();
         }
-    }, [token]);
+    }, [token, routeId]);
 
     if (!user || (!isPublisher && !isAdmin)) {
         return null;

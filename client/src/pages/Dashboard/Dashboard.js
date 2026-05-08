@@ -7,16 +7,13 @@ import {
   CardContent,
   Box,
   Button,
-  Paper,
   Avatar,
   Stack,
-  Divider,
   Chip,
   Alert
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
 import {
   AddCircle,
   Article,
@@ -50,7 +47,6 @@ const Dashboard = () => {
    * the specific actions relevant to their institutional role without unnecessary clutter.
    */
   const { user, isAdmin, isPublisher } = useAuth();
-  const { t } = useTranslation();
 
   /*
    * feature-registry

@@ -19,7 +19,7 @@ import {
   Login as LoginIcon,
   Email
 } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 
@@ -32,6 +32,8 @@ const Login = () => {
   const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isExpired = new URLSearchParams(location.search).get('expired') === 'true';
 
   /*
    * local-state-management
@@ -152,6 +154,20 @@ const Login = () => {
 
             {/* Form Section */}
             <Box sx={{ p: { xs: 4, sm: 5 } }}>
+              {isExpired && !error && (
+                <Fade in={true}>
+                  <Alert
+                    severity="warning"
+                    sx={{
+                      mb: 3,
+                      borderRadius: '12px',
+                    }}
+                  >
+                    Your session has expired. Please log in again.
+                  </Alert>
+                </Fade>
+              )}
+
               {error && (
                 <Fade in={!!error}>
                   <Alert

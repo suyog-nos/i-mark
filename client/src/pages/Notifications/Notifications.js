@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     Container,
     Typography,
@@ -11,7 +11,6 @@ import {
     Avatar,
     IconButton,
     Button,
-    Chip,
     Divider,
     Fade,
     Stack,
@@ -27,9 +26,7 @@ import {
     Favorite,
     Circle
 } from '@mui/icons-material';
-import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
-import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
 
 const Notifications = () => {
