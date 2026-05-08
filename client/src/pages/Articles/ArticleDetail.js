@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Typography,
@@ -39,7 +39,7 @@ const ArticleDetail = () => {
    */
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, user, isAdmin, isPublisher, token } = useAuth();
+  const { isAuthenticated, user, isAdmin, isPublisher } = useAuth();
   const { toggleBookmark, isBookmarked: checkBookmarked } = useBookmarks();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,27 +51,7 @@ const ArticleDetail = () => {
    * Triggers the article fetching sequence whenever the ID or User context changes.
    * Ensures the view reflects the most current data state.
    */
-  useEffect(() => {
-    fetchArticle();
-  }, [id, user]);
-
-  /*
-   * CONTENT HYDRATION AND ENGAGEMENT WORKFLOW (Workflow Overview)
-   * This module serves as the primary consumption interface for the Insight World platform. 
-   * The workflow begins by extracting the unique resource ID from the URL and initiating a 
-   * deep-fetch request to the backend. Beyond just rendering text, this logic orchestrates 
-   * the "Soft Paywall"—a strategic mechanism that detects the user's authentication state to 
-   * either show the full content or a truncated, masked preview. It also tracks real-time 
-   * engagement metrics like likes, shares, and bookmarks, ensuring that the reader's 
-   * interaction with the story is instantly synchronized with their personal profile and 
-   * the global analytics dashboard.
-   */
-  const handleBookmark = async () => {
-    if (!article) return;
-    await toggleBookmark(article);
-  };
-
-  const fetchArticle = async () => {
+  const fetchArticle = useCallback(async () => {
     try {
       const response = await axios.get(`/api/articles/${id}`);
       setArticle(response.data);
@@ -86,6 +66,15 @@ const ArticleDetail = () => {
     } finally {
       setLoading(false);
     }
+  }, [id, isAuthenticated, user]);
+
+  useEffect(() => {
+    fetchArticle();
+  }, [fetchArticle]);
+
+  const handleBookmark = async () => {
+    if (!article) return;
+    await toggleBookmark(article);
   };
 
   /*

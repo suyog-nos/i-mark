@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Container,
     Typography,
     Box,
     Button,
-    Grid,
-    Card,
-    CardContent,
     Chip,
     IconButton,
     Tooltip,
@@ -29,7 +26,7 @@ import {
     TrendingUp as AnalyticsIcon,
     Schedule as ScheduleIcon
 } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -41,16 +38,12 @@ const MyArticles = () => {
      * - State Management: Handles loading states and error boundaries for network requests.
      */
     const { token, user, isPublisher } = useAuth();
-    const navigate = useNavigate();
+
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        fetchMyArticles();
-    }, [token]);
-
-    const fetchMyArticles = async () => {
+    const fetchMyArticles = useCallback(async () => {
         try {
             const res = await axios.get('/api/articles/my/articles', {
                 headers: { Authorization: `Bearer ${token}` }
@@ -61,7 +54,11 @@ const MyArticles = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [token]);
+
+    useEffect(() => {
+        fetchMyArticles();
+    }, [fetchMyArticles]);
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this article?')) {

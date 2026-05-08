@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Typography,
@@ -6,10 +6,8 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   Button,
   Chip,
-  Paper,
   TextField,
   InputAdornment,
   IconButton,
@@ -18,12 +16,10 @@ import {
   Divider,
   Avatar,
   CardActionArea,
-  useTheme,
   Pagination
 } from '@mui/material';
 import {
   Search,
-  Schedule,
   Visibility,
   ArrowForward,
   AccountBalance,
@@ -34,10 +30,7 @@ import {
   Theaters,
   Science,
   School,
-  Article,
-  TrendingUp,
   AccessTime,
-  PersonOutline,
   SearchOff,
   FilterList,
   Newspaper
@@ -49,9 +42,7 @@ import axios from 'axios';
 import ImageComponent from '../../components/Common/ImageComponent';
 
 const Categories = () => {
-  const { t } = useTranslation();
   const { darkMode } = useCustomTheme();
-  const theme = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +51,7 @@ const Categories = () => {
   const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const categories = [
+  const categories = React.useMemo(() => [
     { name: 'Politics', icon: AccountBalance, color: '#ef4444', description: 'Government, elections, and political news' },
     { name: 'Sports', icon: SportsFootball, color: '#10b981', description: 'Sports events, scores, and athlete news' },
     { name: 'Technology', icon: Computer, color: '#3b82f6', description: 'Tech innovations, gadgets, and digital trends' },
@@ -69,27 +60,7 @@ const Categories = () => {
     { name: 'Entertainment', icon: Theaters, color: '#ec4899', description: 'Movies, music, celebrities, and entertainment' },
     { name: 'Science', icon: Science, color: '#06b6d4', description: 'Scientific discoveries and research' },
     { name: 'Education', icon: School, color: '#84cc16', description: 'Educational news and academic updates' }
-  ];
-
-
-
-  useEffect(() => {
-    fetchArticles();
-  }, [selectedCategory, searchQuery, page]);
-
-  useEffect(() => {
-    const urlCat = searchParams.get('category');
-    if (urlCat) {
-      const match = categories.find(c => c.name.toLowerCase() === urlCat.toLowerCase());
-      if (match && match.name !== selectedCategory) {
-        setSelectedCategory(match.name);
-      }
-    }
-    const urlPage = parseInt(searchParams.get('page'));
-    if (urlPage && urlPage !== page) {
-      setPage(urlPage);
-    }
-  }, []);
+  ], []);
 
   /*
    * EXPLORE UNIVERSE DISCOVERY CONTROLLER (Workflow Overview)
@@ -101,7 +72,7 @@ const Categories = () => {
    * exact same filtered view. It effectively acts as a bridge between the user's curiosity and 
    * the vast archive of news stored in the database.
    */
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     try {
       setLoading(true);
       let url = `/api/articles?limit=12&page=${page}`;
@@ -119,7 +90,25 @@ const Categories = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, selectedCategory, searchQuery]);
+
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
+
+  useEffect(() => {
+    const urlCat = searchParams.get('category');
+    if (urlCat) {
+      const match = categories.find(c => c.name.toLowerCase() === urlCat.toLowerCase());
+      if (match && match.name !== selectedCategory) {
+        setSelectedCategory(match.name);
+      }
+    }
+    const urlPage = parseInt(searchParams.get('page'));
+    if (urlPage && urlPage !== page) {
+      setPage(urlPage);
+    }
+  }, [categories, page, searchParams, selectedCategory]);
 
   const handleCategorySelect = (categoryName) => {
     setSelectedCategory(categoryName);

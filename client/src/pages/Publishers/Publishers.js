@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Typography,
@@ -11,7 +11,6 @@ import {
   TextField,
   InputAdornment,
   CircularProgress,
-  Chip,
   Paper,
   Stack,
   IconButton,
@@ -22,13 +21,10 @@ import {
   PersonAdd,
   PersonRemove,
   Verified,
-  Article,
-  Email,
-  ArrowForward
+  Email
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
 
 const Publishers = () => {
   /*
@@ -37,43 +33,13 @@ const Publishers = () => {
    * - Discovery: Searchable directory of verified publishers.
    * - Persistence: Manages the 'Follow' state using local storage (for guest/quick access) & state sync.
    */
-  const { t } = useTranslation();
-  const { user, token, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [publishers, setPublishers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [following, setFollowing] = useState([]);
 
-  useEffect(() => {
-    fetchPublishers();
-    // Load followed publishers from localStorage
-    const saved = JSON.parse(localStorage.getItem('subscribedPublishers') || '[]');
-    setFollowing(saved.map(p => p._id));
-  }, [search]);
-
-  const getImageUrl = (path) => {
-    if (!path || typeof path !== 'string') return '';
-    if (path.startsWith('http')) return path;
-    const cleanPath = path.replace(/\\/g, '/');
-    return cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
-  };
-
-  /*
-   * directory-search-engine
-   * Performs dynamic queries to the backend to retrieve publisher profiles.
-   * Triggered by the search input debounce or initial component load.
-   */
-  /*
-   * PUBLISHER DIRECTORY SEARCH AND SUBSCRIPTION WORKFLOW (Workflow Overview)
-   * This module provides a transparent look into the creator ecosystem of Insight World. 
-   * The workflow begins with a directory-search engine that performs dynamic queries to 
-   * find verified publishers. Once profiles are retrieved, the logic manages a sophisticated 
-   * subscription state—users can "Follow" publishers to curate their personal news feed. 
-   * This state is synchronized both with the backend for authenticated users and with 
-   * local persistence for immediate UI responsiveness. It bridges the gap between raw 
-   * content and the specific media houses or independent journalists that users trust most.
-   */
-  const fetchPublishers = async () => {
+  const fetchPublishers = useCallback(async () => {
     try {
       const res = await axios.get(`/api/users/publishers/list?search=${search}`);
       setPublishers(res.data.publishers);
@@ -82,6 +48,20 @@ const Publishers = () => {
     } finally {
       setLoading(false);
     }
+  }, [search]);
+
+  useEffect(() => {
+    fetchPublishers();
+    // Load followed publishers from localStorage
+    const saved = JSON.parse(localStorage.getItem('subscribedPublishers') || '[]');
+    setFollowing(saved.map(p => p._id));
+  }, [fetchPublishers]);
+
+  const getImageUrl = (path) => {
+    if (!path || typeof path !== 'string') return '';
+    if (path.startsWith('http')) return path;
+    const cleanPath = path.replace(/\\/g, '/');
+    return cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
   };
 
   const handleToggleFollow = (publisher) => {
